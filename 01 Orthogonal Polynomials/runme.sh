@@ -9,3 +9,5 @@ gfortran tester.o gaussjordan.o polyapprox.o -o tester && ./tester > output && c
 echo "plotting..."
 gnuplot prob2.gpl
 gnuplot prob3.gpl
+gnuplot prob5.gpl
+echo "plots complete, saved as PDFs in directory."

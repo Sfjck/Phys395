@@ -10,9 +10,21 @@ contains
 
 ! uniformly spaced grid of n points covering interval [-1,1]
 pure function uniform(n)
-	integer i, n; real uniform(n); intent(in) n
+	integer, intent(in) :: n
+	real uniform(n)
+	integer i
 	forall (i=1:n) uniform(i) = (2*i-n-1.0)/(n-1.0)
 end function
+
+! grid of n points given by zeroes of T_n on [-1,1]
+pure function chebyGrid(n)
+	integer, intent(in) :: n
+	real chebyGrid(n)
+	integer i
+	real, parameter :: pi = 3.1415926535897932384
+	forall (i=1:n) chebyGrid(i) = cos((pi/n)*(i-0.5))
+end function
+
 
 ! function to be approximated f(x)
 elemental function f(x)
@@ -74,6 +86,4 @@ function basisSums(b, xapprox, n, m, deriv)
 		basisSums(i)= sums
 	end do
 end function
-
-
 end module
