@@ -71,7 +71,7 @@ function basisSums(b, xapprox, n, m, deriv)
 	real, intent(in) :: b(n), xapprox(m)
 	integer, intent(in) :: n, m, deriv
 	integer i,j
-	real basisSums(m), sums
+	real basisSums(m), sums, numerator, denominator
 
 	do i=1,m
 	sums = 0
@@ -80,7 +80,9 @@ function basisSums(b, xapprox, n, m, deriv)
 			if (deriv == 0) then
 				sums = sums + b(j)*cos((j-1)*acos(xapprox(i)))
 			else
-				sums = sums + b(j)*((j-1)*sin((j-1)*acos(xapprox(i))/sqrt(1-xapprox(i)**2)))
+				numerator = (j-1)*sin((j-1)*acos(xapprox(i)))
+				denominator = sqrt(1.0-xapprox(i)**2.0)
+				sums = sums + b(j)*numerator/denominator
 			end if
 		end do
 		basisSums(i)= sums

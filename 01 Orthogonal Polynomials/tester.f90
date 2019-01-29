@@ -170,7 +170,7 @@ deallocate (x, y, xapprox, yapprox)
 write (*,*) "Problem 5-2: Approximations to f(x) = 1/(1+10*x^2) printed to csv files"
 write (*,*) "Plots will be printed to pdf after"
 
-!Problem 3 (Sample size 100):
+!Problem 5-3 (Sample size 100):
 n = 100
 m = 1000
 allocate (x(n), y(n), xapprox(m), yapprox(m))
@@ -194,7 +194,7 @@ deallocate (x, y, xapprox, yapprox)
 write (*,*) "Problem 5-3: Approximations to g(x) = f'(x) printed to csv files"
 write (*,*) "Plots will be printed to pdf after"
 
-!Problem 4 (f(x), Sample size 100): 
+!Problem 5-4a (f(x), Sample size 100): 
 allocate (x(m), y(m), xapprox(m), yapprox(m), error(m))
 x = chebyGrid(m)
 do i=1,m
@@ -207,7 +207,7 @@ error(:) = abs(yapprox(:) - y(:))
 write (*,*) "Problem 5-4a: Maximal error for f(x) approximation is ", maxval(error), " at x = ", x(maxloc(error))
 deallocate (x, y, xapprox, yapprox, error)
 
-!Problem 4 (g(x), Sample size 100):
+!Problem 5-4b (g(x), Sample size 100):
 allocate (x(m), y(m), xapprox(m), yapprox(m), error(m))
 x = chebyGrid(m)
 do i=1,m
