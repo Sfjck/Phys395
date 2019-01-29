@@ -11,61 +11,69 @@ contains
 ! uniformly spaced grid of n points covering interval [-1,1]
 pure function uniform(n)
 	integer i, n; real uniform(n); intent(in) n
-	
-	! uniform grid
 	forall (i=1:n) uniform(i) = (2*i-n-1.0)/(n-1.0)
 end function
 
-
-! function to be approximated
+! function to be approximated f(x)
 elemental function f(x)
 	real f, x; intent(in) x
-	
 	f = 1.0/(1.0 + 10.0*x*x)
 end function
 
-! approximate f(x) using chebyshev basis
-function fapprox(x, y, xapprox, n, m)
-	real, intent(in) :: x(n), y(n), xapprox(m)
-	integer, intent(in) :: n, m
-	integer i, j
-	real fapprox(m), A(n,n), B(1,n), AT(n,n)
+! derivative of f(x)
+elemental function g(x)
+	real g, x; intent(in) x
+	g = (-20.0*x)/((1.0+10.0*x*x)**2.0)
+end function
 
+! approximate f(x) or g(x) using chebyshev basis
+function fapprox(x, y, xapprox, n, m, deriv)
+	real, intent(in) :: x(n), y(n), xapprox(m)
+	integer, intent(in) :: n, m, deriv
+	integer i, j
+	real fapprox(m), A(n,n), B(1,n)
+
+	!populate A using basis
 	do i=1,n
 		do j=1,n
 			A(j,i)=basis(j-1, x(i))
 		end do
 		B(1,i) = y(i)
 	end do
-	
-	
-!	AT = transpose(A)
+
+	!solve with gauss jordan
 	call gaussj(n,A,B)
-	fapprox(1:m) = basisSums(B(1,:), xapprox, n, m)
+	fapprox(1:m) = basisSums(B(1,:), xapprox, n, m, deriv)
 end function
 
+!basis with chebyshev polynomials
 elemental function basis(n, x)
-	integer n; real x
-	intent(in) n, x
+	integer, intent(in) :: n
+	real, intent(in) :: x
 	real basis
-
-	! Chebyshev polynomials
 	basis = cos(n*acos(x))
 end function
 
-function basisSums(b, xapprox, n, m)
+!summation with basis polynomial, deriv toggles derivative
+function basisSums(b, xapprox, n, m, deriv)
 	real, intent(in) :: b(n), xapprox(m)
-	integer, intent(in) :: n, m
-	integer :: i,j
-	real::basisSums(m), sums
+	integer, intent(in) :: n, m, deriv
+	integer i,j
+	real basisSums(m), sums
 
 	do i=1,m
 	sums = 0
+		!term number
 		do j=1,n
-			sums = sums + b(j)*cos((j-1)*acos(xapprox(i)))
-			basisSums(i)= sums
+			if (deriv == 0) then
+				sums = sums + b(j)*cos((j-1)*acos(xapprox(i)))
+			else
+				sums = sums + b(j)*((j-1)*sin((j-1)*acos(xapprox(i))/sqrt(1-xapprox(i)**2)))
+			end if
 		end do
+		basisSums(i)= sums
 	end do
 end function
+
 
 end module

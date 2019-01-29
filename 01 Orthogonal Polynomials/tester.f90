@@ -33,47 +33,69 @@ write (*,*) B
 n = 10
 m = 1000
 allocate (x(n), y(n), xapprox(m), yapprox(m))
-x = uniform(n)
-xapprox = uniform(m)
-
 open(1, file = "freal_10.csv", status = "unknown")
+x = uniform(n)
 do i=1,n
 	y(i) = f(x(i))
 	write(1,*) x(i), y(i)
 end do
 close(1)
 
-open(2, file = "fapprox_10.csv", status = "unknown")
-yapprox = fapprox(x,y,xapprox,n,m)
+open(1, file = "fapprox_10.csv", status = "unknown")
+xapprox = uniform(m)
+yapprox = fapprox(x,y,xapprox,n,m,0)
 do i=i,m
-	write(2,*) xapprox(i), yapprox(i)
+	write(1,*) xapprox(i), yapprox(i)
 end do
-close(2)
+close(1)
 deallocate (x, y, xapprox, yapprox)
 
-!Problem 2 (Sample size 100:
+!Problem 2 (Sample size 100):
 n = 100
 m = 1000
 allocate (x(n), y(n), xapprox(m), yapprox(m))
+open(1, file = "freal_100.csv", status = "unknown")
 x = uniform(n)
-xapprox = uniform(m)
-
-open(3, file = "freal_100.csv", status = "unknown")
 do i=1,n
 	y(i) = f(x(i))
-	write(3,*) x(i), y(i)
+	write(1,*) x(i), y(i)
 end do
-close(3)
+close(1)
 
-open(4, file = "fapprox_100.csv", status = "unknown")
-yapprox = fapprox(x,y,xapprox,n,m)
+open(1, file = "fapprox_100.csv", status = "unknown")
+xapprox = uniform(m)
+yapprox = fapprox(x,y,xapprox,n,m,0)
 do i=i,m
-	write(4,*) xapprox(i), yapprox(i)
+	write(1,*) xapprox(i), yapprox(i)
 end do
-close(4)
+close(1)
 deallocate (x, y, xapprox, yapprox)
 
 write (*,*) "Problem 2: Approximations to f(x) = 1/(1+10*x^2) printed to csv files"
+write (*,*) "Plots will be shown after"
+
+!Problem 3 (Sample size 100):
+n = 100
+m = 1000
+allocate (x(n), y(n), xapprox(m), yapprox(m))
+open(1, file = "greal_100.csv", status = "unknown")
+x = uniform(n)
+do i=1,n
+	y(i) = g(x(i))
+	write(1,*) x(i), y(i)
+end do
+close(1)
+
+open(1, file = "gapprox_100.csv", status = "unknown")
+xapprox = uniform(m)
+yapprox = fapprox(x,y,xapprox,n,m,1)
+do i=i,m
+	write(1,*) xapprox(i), yapprox(i)
+end do
+close(1)
+deallocate (x, y, xapprox, yapprox)
+
+write (*,*) "Problem 3: Approximations to g(x) = f'(x) printed to csv files"
 write (*,*) "Plots will be shown after"
 
 
