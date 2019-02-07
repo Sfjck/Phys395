@@ -21,16 +21,22 @@ function fitsvd(x, y, numPoints, n) result(yFit)
 	b_a = basis(numPoints, x, n)
 	
 	forall (j=1:n+1, k=1:n+1) B(j,k) = sum(b_a(:, j) * b_a(:, k))
+	
+	write(*,*) "1"
+
 	p = matmul(transpose(b_a), y)
 
 	call svd(n+1, B, U, sig, VT)
 
 	coeffs = svdSolver(p, U, sig, VT, eps = 1.0e-6)
+	write(*,*) "2"
+
 
 	yfit = matmul(b_a, coeffs)
 	chi2Act = sum((y-yFit)**2)
 	chi2Exp = size(x) - (n+1)
 	condNum = sig(1) / sig(n+1)
+	write(*,*) "3"
 end function
 
 ! solve (U*s*Vh)x = b
