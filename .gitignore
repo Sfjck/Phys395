@@ -3,3 +3,6 @@
 a.out
 *.o
 *.mod
+
+# ignore datas
+*.csv
