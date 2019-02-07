@@ -14,8 +14,6 @@ real, dimension(:), allocatable :: x, y !actual data arrays
 real, dimension(:), allocatable :: yFit3svd, yFit7svd, yFit3lss, yFit7lss
 
 ! read data from file "data.dat", at most n points
-	write(*,*) "123"
-
 open(unit=1, file="data.dat", status="old", action="read")
 do i = 1, maxPoints
 	read (1, *, iostat=iost) xFile(i), yFile(i)
@@ -24,7 +22,6 @@ end do
 close(1)
 
 ! check actual data extent
-	write(*,*) "a"
 numPoints = i-1
 if (numPoints == maxPoints) write (0,*) "Read data extent was truncated, recompile with larger maxPoints"
 
@@ -35,11 +32,11 @@ y = yFile(1:i)
 
 !Problem 2
 open(unit=2, file="svd3.csv", status="replace", action="write")
-	write(*,*) "b"
-yFit3svd = fitsvd(x, y, numPoints, n=3)
+yFit3svd = yFitSVD(x, y, numPoints, n=3)
+!yFit7svd = yfitsvd(x, y, numPoints, n=7)
 write(2, *) "x, y, yFit3svd(x)"
 do i = 1, numPoints
-	write (2, *) x(i), ",", y(i), ",", yFit3svd
+	write (2, *) x(i), ",", y(i), ",", yFit3svd(i)
 end do
 close(2)
 

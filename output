@@ -1,4 +1,4 @@
- 123
- a
- b
- 1
+ Optimal Lwork was   268.00000000000000      , you used          32
+ Chi^2 (Expected):   9127.0000000000000     
+ Chi^2 (Actual):   9450.8591135911684     
+ Condition number:   2.0052160263669161     

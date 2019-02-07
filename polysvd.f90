@@ -7,36 +7,36 @@ implicit none
 contains
 
 ! fit function for single value decomp
-function fitsvd(x, y, numPoints, n) result(yFit)
+function yFitSVD(x, y, numPoints, n)
 	integer :: numPoints, n, a, i, j, k
 	real, dimension(:) :: x, y
-	real, dimension(numPoints) :: yFit
+	real, dimension(numPoints+1) :: yFitSVD
 	real, dimension(n+1) :: coeffs, p, sig
-	real, dimension(numPoints, n+1) :: b_a
+	real, dimension(numPoints+1, n+1) :: b_a
 	real, dimension(n+1, n+1) :: B, U, VT
 	real :: chi2Act, chi2Exp, condNum
 
 	! minimize |y - b_a x|^2
 	! solve Bc = p
-	b_a = basis(numPoints, x, n)
-	
+	b_a = basis(numPoints+1, x, n)
 	forall (j=1:n+1, k=1:n+1) B(j,k) = sum(b_a(:, j) * b_a(:, k))
-	
-	write(*,*) "1"
 
 	p = matmul(transpose(b_a), y)
 
 	call svd(n+1, B, U, sig, VT)
 
 	coeffs = svdSolver(p, U, sig, VT, eps = 1.0e-6)
-	write(*,*) "2"
 
-
-	yfit = matmul(b_a, coeffs)
-	chi2Act = sum((y-yFit)**2)
+	yFitSVD = matmul(b_a, coeffs)
 	chi2Exp = size(x) - (n+1)
+	chi2Act = sum((y-yFitSVD)**2)
 	condNum = sig(1) / sig(n+1)
-	write(*,*) "3"
+
+	write(*,*) "Chi^2 (Expected):", chi2Exp
+	write(*,*) "Chi^2 (Actual):", chi2Act
+	write(*,*) "Condition number:", condNum
+
+	
 end function
 
 ! solve (U*s*Vh)x = b
@@ -56,13 +56,13 @@ subroutine svd(n, A, U, sig, VT)
 	real :: A(n,n), ACopy(n,n), U(n, n), sig(n), VT(n, n)
 	real, dimension(:), allocatable :: work
 
-	LWork = 6*n !must be at least 5*n, manually tested for optimal
+	LWork = 8*n !must be at least 5*n
 	allocate(work(LWork))
 	ACopy = A !dgesvd destroys ACopy so A  is untouched
 	!DGESVD(JOBU, JOBVT, M, N, A, LDA, S, U, LDU, VT, LDVT, WORK, LWORK, INFO )
 	call dgesvd('A', 'A', n, n, ACopy, n, sig, U, n, VT, n, work, LWork, info)
 	if (info /= 0) call abort
-	if (Work(1) /= LWork) write(*,*) "LWork was not optimal, optimal Lwork=", LWork
+	if (Work(1) /= LWork) write(*,*) "Optimal Lwork was", Work(1), ", you used", LWork
 end subroutine
 
 ! basis is b_a(x)=cos(2pi*a*x)
