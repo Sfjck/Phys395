@@ -26,9 +26,9 @@ x = xFile(1:i)
 y = yFile(1:i)
 
 ! write data back to stdout
-do i = 1,m
-	write (*,*) x(i), y(i)
-end do
+!do i = 1,m
+!	write (*,*) x(i), y(i)
+!end do
 
 
 deallocate (x, y)
