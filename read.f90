@@ -3,24 +3,33 @@
 
 program read; implicit none
 
-integer, parameter :: n = 1500
+integer, parameter :: maxPoints = 1000000 !arbitrarily large
+integer i, iost, numPoints
+real xFile(n), yFile(n) !for reading the file
+real, dimension(:), allocatable :: x, y !actual data arrays 
 
-real x(n), y(n)
-
-integer i, m, status
-
-! read data from stdin, at most n points
-do i = 1,n
-	read (*,*,iostat=status) x(i), y(i)
+! read data from file "data.dat", at most n points
+open(unit=1, file="data.dat", status="old", action="read")
+do i = 1, maxPoints
+	read (1, *, iostat=iost) xFile(i), yFile(i)
 	if (status < 0) exit
 end do
+close(1)
 
 ! check actual data extent
-m = i-1; if (m == n) write (0,*) "Read data extent was truncated, recompile with larger n"
+numPoints = i-1
+if (numPoints == maxPoints) write (0,*) "Read data extent was truncated, recompile with larger maxPoints"
+
+! allocate data arrays
+allocate(x(numPoints), y(numPoints))
+x = xFile(1:i)
+y = yFile(1:i)
 
 ! write data back to stdout
 do i = 1,m
 	write (*,*) x(i), y(i)
 end do
 
+
+deallocate (x, y)
 end program
