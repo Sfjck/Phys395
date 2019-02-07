@@ -1,2 +1,7 @@
 # Phys395-A2
-This assignment solves the least-square fit problem
+This assignment solves polynomial fitting problems with SVD and LSS
+
+Run with:
+bash runme.sh
+
+Outputs in "Output" and "Plots.pdf"
