@@ -7,10 +7,11 @@ implicit none
 contains
 
 ! fit function for single value decomp
-function fitsvd(x, y, numPoints, n) results(yFit)
+function fitsvd(x, y, numPoints, n) result(yFit)
 	integer :: numPoints, n, a, i, j, k
 	real, dimension(:) :: x, y
 	real, dimension(numPoints) :: yFit
+	real, dimension(n+1) :: coeffs, p, sig
 	real, dimension(numPoints, n+1) :: b_a
 	real, dimension(n+1, n+1) :: B, U, VT
 	real :: chi2Act, chi2Exp, condNum
@@ -19,22 +20,22 @@ function fitsvd(x, y, numPoints, n) results(yFit)
 	! solve Bc = p
 	b_a = basis(numPoints, x, n)
 	
-	forall (j=1:n+1), k=1:n+1) B(j,k) = sum(b_a(:, j) * b_a(:, k)
+	forall (j=1:n+1, k=1:n+1) B(j,k) = sum(b_a(:, j) * b_a(:, k))
 	p = matmul(transpose(b_a), y)
 
 	call svd(n+1, B, U, sig, VT)
 
 	coeffs = svdSolver(p, U, sig, VT, eps = 1.0e-6)
 
-	yFit = matmul(bxa, coeffs)
+	yfit = matmul(b_a, coeffs)
 	chi2Act = sum((y-yFit)**2)
 	chi2Exp = size(x) - (n+1)
-	condNum = s(1) / s(n+1)
+	condNum = sig(1) / sig(n+1)
 end function
 
 ! solve (U*s*Vh)x = b
-function svdSolver(b, U, sig, VT, eps)! result(x)
-	real :: b(:), s(:), U(:, :), x(size(VT, 2)), eps
+function svdSolver(b, U, sig, VT, eps) result(x)
+	real :: b(:), U(:, :), sig(:), VT(:,:), eps, x(size(VT, 2))
 
 	x = matmul(transpose(U), b)
 	where (sig > eps * sig(1)); x = x / sig
@@ -67,5 +68,4 @@ pure function basis(numPoints, x, n)
 
 	forall (a=0:n, i=1:numPoints) basis(i, a+1) = cos(2*pi*a*x(i))
 end function
-
 end module
