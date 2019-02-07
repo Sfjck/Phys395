@@ -9,16 +9,25 @@
  
  Problem 2&3: Fitting noisy data with SVD, n=3. Then computing fit parameters, condition number, and X2.
  Fit complete, results printed csv to be plotted later
-SVD n=3 fit parameters:   -1.170   4.181   2.002   0.711
-Condition number:          2.005
-Chi-squared:            9450.859
-Degrees of freedom:     9126.000
+ SVD n=3 fit parameters:   -1.170  4.181  2.002  0.711
+ Condition number:          2.005
+ Chi-squared:            9450.859
+ Degrees of freedom:     9126.000
  With the above results, the p-value of the chi-squared statistic is 0.991, making the fit very good.
  
  Problem 4: Fitting noisy data with SVD, n=7. Then computing fit parameters, condition number, and X2.
  Fit complete, results printed csv to be plotted later
-SVD n=7 fit parameters:   -1.170   4.180   2.000   0.711   0.207   0.013  -0.091   0.202
-Condition number:          2.023
-Chi-squared:            9029.101
-Degrees of freedom:     9122.000
- With the above results, the p-value of the chi-squared statistic is 0.991, making the fit very good.
+ SVD n=7 fit parameters:   -1.170  4.180  2.000  0.711  0.207  0.013 -0.091  0.202
+ Condition number:          2.023
+ Chi-squared:            9029.101
+ Degrees of freedom:     9122.000
+ With the above results, the p-value of the chi-squared statistic is 0.250, making the fit poor.
+ 
+ Problem 5: Fitting noisy data with LSS, n=3. Then computing fit parameters, condition number, and X2.
+ Fit complete, results printed csv to be plotted later
+ LSS n=3 fit parameters:   -1.170  4.181  2.002  0.711
+ Condition number:          1.416
+ Chi-squared:            9450.859
+ Degrees of freedom:     9126.000
+ Compared to SVD fit, the LSS fit has a lower condition number, so it's  less sensitive to input errors.
+ Fit parameters, chi-squared, and goodness of fit were all identical.

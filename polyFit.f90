@@ -6,9 +6,9 @@ module polyFit
 implicit none
 contains
 
-! fit function for single value decomp
-function yFit(x, y, numPoints, n, fitResults)
-	integer :: numPoints, n, a, i, j, k
+! fit function, uses SVD(method=0) or LSS(method=1)
+function yFit(x, y, numPoints, n, fitResults, method)
+	integer :: numPoints, n, method, a, i, j, k
 	real, dimension(:) :: x, y, fitResults
 	real, dimension(numPoints+1, n+1) :: b_a
 	real, dimension(n+1, n+1) :: b_ab, U, VT
@@ -21,9 +21,13 @@ function yFit(x, y, numPoints, n, fitResults)
 	b_ab = basisSOP(numPoints, b_a, n)
 	b = matmul(transpose(b_a), y) !solve b_ab*c = b
 
-	!solving using SVD
-	call svd(n+1, b_ab, U, sig, VT)
-	fitParams = svdFit(b, U, sig, VT) !=c_a
+	!solving using chosen method
+	if (method == 0) then !SVD
+		call svd(n+1, b_ab, U, sig, VT)
+		fitParams = svdFit(b, U, sig, VT) !=c_a
+	else !LSS
+		call lss(n+1, numPoints+1, b_a, y, -1.0, fitParams, sig)
+	end if
 
 	!calculate fit results
 	yFit = matmul(b_a, fitParams)
@@ -37,6 +41,24 @@ function yFit(x, y, numPoints, n, fitResults)
 	fitResults(n+3) = chi2
 	fitResults(n+4) = DoF 
 end function
+
+!pretty much same as subroutine svd below but with lss
+subroutine lss(n, numPoints, A, B, rcond, fitParams, sig)
+	integer :: n, numPoints, LWork, rank, info
+	real :: A(numPoints,n), B(:), rcond, fitParams(n), sig(n)
+	real :: ACopy(numPoints, n), BCopy(numPoints)
+	real, dimension(:), allocatable :: work
+
+	LWork=8*n !must be at least 5*n
+	allocate(work(LWork))
+	ACopy=A
+	BCopy=B
+	!DGELSS( M, N, NRHS, A, LDA, B, LDB, S, RCOND, RANK, WORK, LWORK, INFO )
+	call dgelss(numPoints, n, 1, ACopy, numPoints, BCopy, numPoints, sig, rcond, rank, work, LWork, info)
+	fitParams = BCopy(1:n)
+	if (info /= 0) call abort
+!	if (Work(1) /= LWork) write(*,*) "Optimal Lwork was", Work(1)
+end subroutine
 
 ! solve (U * sig * VT)x = b for x, using SVD
 function svdFit(b, U, sig, VT)

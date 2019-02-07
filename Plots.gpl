@@ -1,0 +1,29 @@
+set terminal pdf enhanced
+set output 'Plots.pdf'
+
+set multiplot
+set title 'SVD polynomial fits (n=3 and n=7)'
+set xlabel 'x'
+set ylabel 'y'
+set key right bottom Right
+set datafile separator ","
+plot 'svd3.csv' u 1:2 title 'Data', 'svd3.csv' u 1:3 w l title 'Fit(n=3)', 'svd7.csv' u 1:3 w l title 'Fit(n=7)' lc rgb 'orange'
+unset multiplot
+
+set multiplot
+set title 'LSS polynomial fit (n=3)'
+set xlabel 'x'
+set ylabel 'y'
+set key right bottom Right
+set datafile separator ","
+plot 'lss.csv' u 1:2 title 'Data', 'lss.csv' u 1:3 w l title 'Fit(n=3)'
+unset multiplot
+
+set multiplot
+set title 'SVD and LSS polynomial fits (both n=3)'
+set xlabel 'x'
+set ylabel 'y'
+set key right bottom Right
+set datafile separator ","
+plot 'svd3.csv' u 1:2 title 'Data', 'svd3.csv' u 1:3 w l title 'Fit(SVD)', 'lss.csv' u 1:3 w l title 'Fit(LSS)' dashtype 2 lc rgb 'orange'
+unset multiplot
