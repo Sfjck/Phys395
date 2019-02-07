@@ -1,4 +1,24 @@
- Optimal Lwork was   268.00000000000000      , you used          32
- Chi^2 (Expected):   9127.0000000000000     
- Chi^2 (Actual):   9450.8591135911684     
- Condition number:   2.0052160263669161     
+ Problem 1: Testing single value decomposition of matrix A(3x3):
+   1.000   4.000   7.000
+   2.000   5.000   8.000
+   3.000   6.000   9.000
+ SVD results:     U(3x3)| Sigma(3)| VT(3x3):
+  -0.480   0.777   0.408|   16.848| -0.215 -0.521 -0.826
+  -0.572   0.076  -0.816|    1.068| -0.887 -0.250  0.388
+  -0.665  -0.625   0.408|    0.000|  0.408 -0.816  0.408
+ 
+ Problem 2&3: Fitting noisy data with SVD, n=3. Then computing fit parameters, condition number, and X2.
+ Fit complete, results printed csv to be plotted later
+SVD n=3 fit parameters:   -1.170   4.181   2.002   0.711
+Condition number:          2.005
+Chi-squared:            9450.859
+Degrees of freedom:     9126.000
+ With the above results, the p-value of the chi-squared statistic is 0.991, making the fit very good.
+ 
+ Problem 4: Fitting noisy data with SVD, n=7. Then computing fit parameters, condition number, and X2.
+ Fit complete, results printed csv to be plotted later
+SVD n=7 fit parameters:   -1.170   4.180   2.000   0.711   0.207   0.013  -0.091   0.202
+Condition number:          2.023
+Chi-squared:            9029.101
+Degrees of freedom:     9122.000
+ With the above results, the p-value of the chi-squared statistic is 0.991, making the fit very good.
