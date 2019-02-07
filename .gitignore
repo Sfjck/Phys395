@@ -1,0 +1,5 @@
+
+# ignore Fortran binaries
+a.out
+*.o
+*.mod
