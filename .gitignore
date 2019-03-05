@@ -1,12 +1,16 @@
-# ignore Fortran binaries
-a.out
+# ignore Fortran binaries and outputs
+*.out
 *.o
 *.mod
+*.arj
+*.exe
+tester
 
 # ignore data files
 *.dat
+*.csv
 
-# ignore derived plots
+# ignore plots
 *.eps
 *.pdf
 *.svg
