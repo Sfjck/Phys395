@@ -7,29 +7,31 @@ implicit none
 
 ! Interface for calling the f&df functions
 interface
-    function real2real(x)
-        real, intent(in) :: x
-        real :: real2real
-    end function real2real
+	!real and real array to real; forall block needs pure
+	pure function RnRA2R(c, x)
+		real, intent(in) :: c(:), x
+		real :: RnRA2R
+	end function RnRA2R
 	
-	function realArray2realArray(x)
-		real, intent(in) :: x(:)
-		real :: realArray2realArray(size(x))
-	end function realArray2realArray
+	!real and real array to real array; forall block needs pure
+	pure function RnRA2RA(c, x)
+		real, intent(in) :: c(:), x
+		real :: RnRA2RA(size(c))
+	end function RnRA2RA
 end interface
 
 contains
 
 !Use Levenberg  Marquardt algorithm to minimize Chi2
-function levenMarq(x, y, f, df, c0, lambda0, eps, maxRuns)
-	real2real :: f
-	realArray2realArray :: df
+function levenMarq(x, y, f, df, c0, lambda0, eps, maxRuns) result(c)
+	procedure(RnRA2R) :: f
+	procedure(RnRA2RA) :: df
 	real, intent(in) :: x(:), y(:), c0(:), lambda0, eps
-	integer, intent(in) :: iMax
+	integer, intent(in) :: maxRuns
 	real, dimension(size(c0)) :: c, cNext, JTxDiff
 	real, dimension(size(x)) :: diff, diffNext
 	real, dimension(size(c0), size(c0)) :: g, JTxJ
-	real :: J(size(x), size(c0)), JT(size(c0,size(x)))
+	real :: J(size(x), size(c0)), JT(size(c0),size(x))
 	real :: sumSq, sumSqNext, lambda, epsNext
 	integer i, runs
 	real, parameter :: lambdaFactor = 1.1
@@ -85,28 +87,28 @@ function lss(A, B)
 	call dgelss(numPoints, n, 1, ACopy, numPoints, BCopy, numPoints, sig, rcond, rank, work, LWork, info)
 	
 	if (info /= 0) call abort
-	lss = BCopy(1:size(x))
+	lss = BCopy(1:size(lss))
 end function
 
 ! basis is b_a(x)=cos(2pi*a*x)
-pure function basis(numPoints, x, n)
-	integer numPoints, n, a, i
-	real x(numPoints+1), basis(numPoints+1, n+1)
-	intent(in) numPoints, x, n
+pure function basis(a, x)
+	integer, intent(in) :: a
+	real, intent(in) :: x
+	real :: basis
 	real, parameter :: pi = 3.14159265358979323846264338327950288419716939937510
 
-	forall (a=0:n, i=1:numPoints+1) basis(i, a+1) = cos(2*pi*a*x(i))
+	basis = cos(2 * pi * a * x)
 end function
 
 ! non-linear model for fit f3 = e^(sum(cb)) + const
 pure function f3(c, x)
 	real, intent(in) :: c(:), x
-	real :: model, b(size(c) - 1)
-	integer :: a, next
+	real :: f3, b(size(c) - 1)
+	integer :: a, n
 	n = size(c) - 1
 	
-	forall (a=1:n) b(a) = basis(n, a-1 ,x)
-	model = exp(sum(c(1:n) * b)) + c(n+1)
+	forall (a=1:n) b(a) = basis(a-1 ,x)
+	f3 = exp(sum(c(1:n) * b)) + c(n+1)
 end function
 
 pure function df3(c, x)
@@ -115,8 +117,8 @@ pure function df3(c, x)
 	integer :: a, n
 	n = size(c) - 1
 	
-	forall (a=1:n) b(a) = basis(n, a-1, x)
-	dmodel(1:n) = exp(sum(c(1:n) * b)) * b
-	dmodel(n+1) = 1.0
+	forall (a=1:n) b(a) = basis(a-1, x)
+	df3(1:n) = exp(sum(c(1:n) * b)) * b
+	df3(n+1) = 1.0
 end function
 end module
