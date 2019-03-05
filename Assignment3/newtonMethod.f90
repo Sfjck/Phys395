@@ -33,15 +33,15 @@ end function
 
 
 ! f1(x) = x^3 -x +1/4
-elemental function f1(x)
+pure function f1(x)
     real f1, x; intent(in) x
     
     f1 = x**3.0 -x +0.25
 end function
 
 ! df1(x) = f1'(x) = 3x^2 -1
-elemental function df1(x)
-    real df, x; intent(in) x
+pure function df1(x)
+    real df1, x; intent(in) x
     
     df1 = 3.0 * x**2.0 -1.0
 end function

@@ -11,12 +11,16 @@ implicit none
 
 
 
-!Write format labels
-1 format(
+!Write format labels, x = space, a = characters, nfw.d = n (f)loats (w)idth (d)ecimals
+1 format(x, a, 1f20.16)
 
 !Problem 1:
 write (*,*) "Problem 1: Use Newton's method to solve x^3 -x +1/4 = 0 to double precision (eps = 1.0e-16)"
-write (*,*) newton(f1, df1, x0=-1.0, tol=1.0e-16)
+write (*,1) "Root x1: ", newton(f1, df1, x0=-1.0, eps=1.0e-16)
+write (*,1) "Root x2: ", newton(f1, df1, x0=0.0, eps=1.0e-16)
+write (*,1) "Root x3: ", newton(f1, df1, x0=1.0, eps=1.0e-16)
+
+!Problem 3:
 
 end program
 
