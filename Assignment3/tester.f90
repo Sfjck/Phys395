@@ -20,9 +20,9 @@ real xFile(maxPoints), yFile(maxPoints)
 1 format(x, a, 1f20.16)
 2 format(/, a)
 3 format(x, a, 1f8.5, a, 1f8.5, a)
-4 format(a5, i1, a, 1f8.5)
-5 format(a9, 1f8.5)
-6 format(a9, 1f8.2)
+4 format(a5, i1, a, 1f11.8)
+5 format(a9, 1f11.8)
+6 format(a9, 1f11.5)
 
 !Problem 1:
 write (*,*) "Problem 1: Use Newton's method to solve x^3 -x +1/4 = 0 to double precision (eps = 1.0e-16)"
@@ -56,7 +56,7 @@ y = yFile(1:i)
 
 ! actual fitting
 fitResults = 0.0
-fitResults = levenMarq(x, y, f3, df3, c0=fitResults, lambda0=0.7, eps=0.1, maxRuns=100)
+fitResults = levenMarq(x, y, f3, df3, c0=fitResults, lambda0=0.7, eps=0.1, maxLoops=100)
 forall (i=1:size(x)) yFit(i) = f3(fitResults, x(i))
 chi2 = sum((y-yFit)**2.0) !sigma = 1
 
