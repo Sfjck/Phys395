@@ -16,16 +16,16 @@ end interface
 contains
 
 ! Newton's method of approximation, find roots of f(x)
-function newton(f, df, x0, tol) result(x)
+function newton(f, df, x0, eps) result(x)
     procedure(real2real) :: f, df
-    real x0, tol, x, y; intent(in) :: x0, tol
+    real x0, eps, x, y; intent(in) x0, eps
     
 	!starting points
     x = x0
     y = f(x)
 
-	!until y is close enough to 0 (within tol)
-    do while(tol < abs(y))
+	!until y is close enough to 0 (within eps)
+    do while(eps < abs(y))
         x = x - y / df(x)
         y = f(x)
     end do
