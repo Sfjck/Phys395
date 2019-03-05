@@ -1,8 +1,14 @@
-
 # ignore Fortran binaries
 a.out
 *.o
 *.mod
 
-# ignore datas
-*.csv
+# ignore data files
+*.dat
+
+# ignore derived plots
+*.eps
+*.pdf
+*.svg
+*.png
+*.gif
