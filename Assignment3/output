@@ -1,0 +1,4 @@
+ Problem 1: Use Newton's method to solve x^3 -x +1/4 = 0 to double precision (eps = 1.0e-16)
+ Root x1:  -1.1071598716887676
+ Root x2:   0.2695944364054446
+ Root x3:   0.8375654352833231
