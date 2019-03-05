@@ -21,13 +21,15 @@ write (*,1) "Root x1 = ", newton(f1, df1, x0=-1.0, eps=1.0e-16)
 write (*,1) "Root x2 = ", newton(f1, df1, x0=0.0, eps=1.0e-16)
 write (*,1) "Root x3 = ", newton(f1, df1, x0=1.0, eps=1.0e-16)
 
-!Problem 3:
+!Problem 2&3:
 write (*,*) ""
-write (*,*) "Problem 3: Use bracketed search (with phi) to minimize (x^2-1)^2 -x"
+write (*,*) "Problem 2&3: Use bracketed search with phi to minimize (x^2-1)^2 -x"
 min1X = bracketMin(f2, a0=-1.5, b0=-0.5, eps=1.0e-6)
 min2X = bracketMin(f2, a0=0.5, b0=1.5, eps=1.0e-6)
 write (*,2) "Minimum (x1, y1) = (", min1X, ", ", f2(min1X), ")"
 write (*,2) "Minimum (x2, y2) = (", min2X, ", ", f2(min2X), ")"
+
+!Problem 4&5:
 
 end program
 
