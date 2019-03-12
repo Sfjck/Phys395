@@ -12,7 +12,7 @@ implicit none
 !Time step bigger here since we're running a LOT more simulations
 real, parameter :: dt = 0.05
 integer, parameter :: N = 8, nx = 2*N, ny = 2*N
-real :: y(4), dydt(4), t, tMax, xx, yy, theta1, theta2
+real :: y(4), t, tMax, theta1, theta2
 integer i, j
 real :: xrange(2) = [-pi, pi], yrange(2) = [-pi, pi]
 real(4), allocatable :: image(:,:,:)
@@ -20,20 +20,20 @@ allocate(image(1,nx,ny))
 
 !Problem 3: Scan initial conditions of double pendulum for flip-time
 tMax = 1000.0*sqrt(l/gr)
-do i=0, 2*N-1
-	theta1 = (i-N)/(N-1) * pi
-	do j=0, 2*N-1
+do i=-N+1, N
+	theta1 = pi * i/N
+	do j=-N+1, N
 		t = 0
-		theta2 = (j-N)/(N-1) * pi
+		theta2 = pi * j/N
 		y = [theta1, theta2, 0.0, 0.0]
 		do while ((abs(y(2)) .le. pi) .and. (t .le. tMax))
 			call gl8(y, dt)
 			t = t+dt
 		end do
-		image(1, i+1, j+1) = t
+		image(1, i+N, j+N) = t
 	end do
 end do
-call write2fits('fractal1.fit', image, xrange, yrange, ['N'])
+call write2fits('fractal1.fits', image, xrange, yrange, ['N'])
 write(*,*)
 
 contains
