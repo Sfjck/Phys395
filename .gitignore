@@ -5,6 +5,7 @@
 *.arj
 *.exe
 tester
+output
 
 # ignore data files
 *.dat
