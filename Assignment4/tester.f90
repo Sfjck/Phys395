@@ -1,7 +1,7 @@
 !compile with:
 !gfortran -c -fdefault-real-8 tester.f90
 !link and run with:
-!gfortran tester.o gaussLeg.o globalVars.o && ./tester > output && cat output
+!gfortran -g tester.o gaussLeg.o globalVars.o -o tester && ./tester > output && cat output
 
 program tester
 use gaussLeg
@@ -32,7 +32,6 @@ open(unit=2, file="trajectory.csv", status="replace", action="write")
 write(2,*) "x", ",", "y"
 open(unit=3, file="animation.csv", status="replace", action="write")
 
-
 do while(t .le. tMax)
 	!write data for energy conservation violation
 	write(1,*) t, ",", abs(Energy/E0 - 1.0)
@@ -49,11 +48,7 @@ do while(t .le. tMax)
 	t = t+dt
 end do
 
-write (*,*) "See plots.pdf for plots of energy conservation violation vs time and trajectory of pendulum"
-
-!Problem 3:
-
-
+write (*,*) "Output data generation for problems 1 and 2 complete."
 
 end program
 
