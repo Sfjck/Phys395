@@ -11,7 +11,7 @@ implicit none
 !Variable declarations
 !Time step bigger here since we're running a LOT more simulations
 real, parameter :: dt = 0.05
-integer, parameter :: N = 8, nx = 2*N, ny = 2*N
+integer, parameter :: N = 15, nx = 2*N, ny = 2*N !CHANGE N HERE FOR RESOLUTION
 real :: y(4), t, tMax, theta1, theta2
 integer i, j
 real :: xrange(2) = [-pi, pi], yrange(2) = [-pi, pi]
@@ -23,8 +23,9 @@ tMax = 1000.0*sqrt(l/gr)
 do i=-N+1, N
 	theta1 = pi * i/N
 	do j=-N+1, N
-		t = 0
+		t = 0.0
 		theta2 = pi * j/N
+		write(*,*) theta1, theta2
 		y = [theta1, theta2, 0.0, 0.0]
 		do while ((abs(y(2)) .le. pi) .and. (t .le. tMax))
 			call gl8(y, dt)
