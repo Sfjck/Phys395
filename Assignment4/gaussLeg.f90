@@ -1,39 +1,35 @@
 !module containing code to integrate equations of motion using 8th order Gauss-Legendre method
 !compile with:
-!gfortran -c -fdefault-real-8 gaussLeg.f90 -llapack
-
+!gfortran -c -fdefault-real-8 gaussLeg.f90
 
 module gaussLeg
+use globalVars
 implicit none
+
 contains
 
 ! evaluate derivatives & calculate energies for double pendulum using equations of motion
-! Equations of motion:
-! dth1 = 6/(ml^2) * (2p1 - 3cos(th1-th2)*p2) / (16-9cos^2(th1-th2))
-! dth2 = 6/(ml^2) * (8p2 - 3cos(th1-th2)*p1) / (16-9cos^2(th1-th2))
-! dp1 = -0.5(ml^2)* (dth1*dth2*sin(th1-th2) + 3(g/l)sin(th1))
-! dp2 = -0.5(ml^2)*(-dth1*dth2*sin(th1-th2) + 1(g/l)sin(th2))
-
 !y(1) = theta1, y(2) = theta2, y(3) = p1, y(4) = p2
-!dydt is each y derivative wrt time
 subroutine evalf(y, dydt)
-	real y(4), dydt(4), EKin, EPot; intent(in) y
+	real y(4), dydt(4); intent(in) y
+	real EKin, EPot
 	
 	dydt(1) =  6.0 / (m*l*l) * (2.0*y(3) - 3.0*y(4)*cos(y(1)-y(2))) / (16.0 - 9.0 *(cos(y(1)-y(2)))**2)
 	dydt(2) =  6.0 / (m*l*l) * (8.0*y(4) - 3.0*y(3)*cos(y(1)-y(2))) / (16.0 - 9.0 *(cos(y(1)-y(2)))**2)
-	dydt(3) = -0.5 * (m*l*l) * (dydt(1) * dydt(2) * sin(y(1)-y(2))) + 3.0 * (g/l) * sin(y(1))
-	dydt(4) = -0.5 * (m*l*l) *(-dydt(1) * dydt(2) * sin(y(1)-y(2))) + 1.0 * (g/l) * sin(y(2))
+	dydt(3) = -0.5 * (m*l*l) * (dydt(1) * dydt(2) * sin(y(1)-y(2))) + 3.0 * (gr/l) * sin(y(1))
+	dydt(4) = -0.5 * (m*l*l) *(-dydt(1) * dydt(2) * sin(y(1)-y(2))) + 1.0 * (gr/l) * sin(y(2))
 	
 	EKin = (1/6.0) * (m*l*l) * (dydt(2)**2 + 4.0*dydt(1)**2 + 3.0*dydt(1)*dydt(2)*cos(y(1)-y(2)))
-	EPot = (1/2.0) * (m*g*l) * (3.0*cos(y(1)) + cos(y(2)))
-	Energy = EKin - EPot
+	EPot = -0.5 * (m*gr*l)* (3.0*cos(y(1)) + cos(y(2)))
+	Energy = EKin + EPot
 end subroutine
 
 
 !8th order implicity Gauss-Legendre integrator, from Andrei
 subroutine gl8(y, dt)
 	integer, parameter :: s = 4, n = 4
-	real y(n), g(n,s), dt; integer i, k
+	real y(n), g(n,s), dt
+	integer i, k
 	! Butcher tableau for 8th order Gauss-Legendre method
 	real, parameter :: a(s,s) = reshape((/ &
 		0.869637112843634643432659873054998518Q-1, -0.266041800849987933133851304769531093Q-1, &
