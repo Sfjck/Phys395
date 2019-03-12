@@ -1,0 +1,20 @@
+set terminal pdf enhanced
+set output 'plots.pdf'
+
+set multiplot
+set title 'Energy conservation violation over time'
+set xlabel 't'
+set ylabel 'Energy conservation violation (E/E0 - 1)'
+unset key
+set datafile separator ","
+plot 'energyViolation.csv' u 1:2 w boxes title 'energy violation'
+unset multiplot
+
+set multiplot
+set title 'Double pendulum end trajectory'
+set xlabel 'x'
+set ylabel 'y'
+unset key
+set datafile separator ","
+plot 'trajectory.csv' u 1:2 w l title 'trajectory'
+unset multiplot

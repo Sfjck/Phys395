@@ -29,30 +29,28 @@ EViolation = .false.
 t = 0
 
 open(unit=1, file="energyViolation.csv", status="replace", action="write")
-write(1,*) "time", ",", "energy conservation violation"
+write(1,*) "t", ",", "E/E0 -1"
 open(unit=2, file="trajectory.csv", status="replace", action="write")
-write(2,*) "time", ",", "x", ",", "y"
+write(2,*) "x", ",", "y"
 
 do while(t .le. tMax)
 	!write data for energy conservation violation
 	write(1,*) t, ",", abs(Energy/E0 - 1)
-!	if (abs(Energy/E0 -1) .ge. eps) then
-!		write (*,*) "Energy conservation violation of ", Energy/E0 - 1, " at t = ", t
-!		EViolation = .true.
-!	end if
+	if (abs(Energy/E0 -1) .ge. eps) then
+		write (*,*) "Energy conservation violation of ", Energy/E0 - 1, " at t = ", t
+		EViolation = .true.
+	end if
 	!write data for trajectory of end of pendlulum
-!	write(2,*)  l*(sin(y(1))+sin(y(2))), -l*(cos(y(1))+cos(y(2)))
-
-	write(2,*) t, ",", l * (sin(y(1))+sin(y(2))), ",", -l * (cos(y(1))+cos(y(2)))	
+	write(2,*) l * (sin(y(1))+sin(y(2))), ",", -l * (cos(y(1))+cos(y(2)))	
 	
 	call gl8(y, dt)
 	t = t+dt
 end do
 
-!if (EViolation .eqv. .false.) then
-!	write (*,*) "Energy conservation violations stayed below required 1e-12"
-!end if
-write (*,*) "Integration complete, see plots for energy conservation violation vs time and trajectory of end of pendulum"
+if (EViolation .eqv. .false.) then
+	write (*,*) "Energy conservation violations stayed below required", eps
+end if
+write (*,*) "See plots.pdf for energy conservation violation vs time and trajectory of end of pendulum"
 
 
 !Problem 3:

@@ -14,14 +14,10 @@ subroutine evalf(y, dydt)
 	real y(4), dydt(4); intent(in) y
 	real EKin, EPot
 	
-!	dydt(1) =  6.0 / (m*l**2) * (2.0*y(3) - 3.0*y(4)*cos(y(1)-y(2))) / (16.0 - 9.0 *cos(y(1)-y(2))*cos(y(1)-y(2)))
-!	dydt(2) =  6.0 / (m*l**2) * (8.0*y(4) - 3.0*y(3)*cos(y(1)-y(2))) / (16.0 - 9.0 *cos(y(1)-y(2))*cos(y(1)-y(2)))
-!	dydt(3) = -0.5 * (m*l**2) * (dydt(1) * dydt(2) * sin(y(1)-y(2))) + 3.0 * (gr/l) * sin(y(1))
-!	dydt(4) = -0.5 * (m*l**2) *(-dydt(1) * dydt(2) * sin(y(1)-y(2))) + 1.0 * (gr/l) * sin(y(2))
-	dydt(1) = 6.0/(l**2) * (2.0*y(3) - 3.0*y(4)*cos(y(1) - y(2)))/(16.0 - 9.0*cos(y(1)-y(2))*cos(y(1) - y(2)))
-	dydt(2) = 6.0/(l**2) * (8.0*y(4) - 3.0*y(3)*cos(y(1) - y(2)))/(16.0 - 9.0*cos(y(1)-y(2))*cos(y(1) - y(2)))
-	dydt(3) = -0.5 * l**2 * (dydt(1) * dydt(2) * sin(y(1) - y(2)) + 3.0*(gr/l)*sin(y(1)))
-	dydt(4) = -0.5 * l**2 * (-dydt(1) * dydt(2) * sin(y(1) - y(2)) + (gr/l)*sin(y(2)))
+	dydt(1) = 6.0 / (m*l**2) * (2.0*y(3) - 3.0*y(4)*cos(y(1) - y(2)))/(16.0 - 9.0*cos(y(1)-y(2))**2)
+	dydt(2) = 6.0 / (m*l**2) * (8.0*y(4) - 3.0*y(3)*cos(y(1) - y(2)))/(16.0 - 9.0*cos(y(1)-y(2))**2)
+	dydt(3) =-0.5 * (m*l**2) * (dydt(1) * dydt(2) * sin(y(1) - y(2)) + (gr/l)*sin(y(1)) *3.0)
+	dydt(4) =-0.5 * (m*l**2) *(-dydt(1) * dydt(2) * sin(y(1) - y(2)) + (gr/l)*sin(y(2)))
 	
 	EKin = (1/6.0) * (m*l*l) * (dydt(2)**2 + 4.0*dydt(1)**2 + 3.0*dydt(1)*dydt(2)*cos(y(1)-y(2)))
 	EPot = -0.5 * (m*gr*l)* (3.0*cos(y(1)) + cos(y(2)))
