@@ -25,7 +25,7 @@ subroutine evalf(y, dydt)
 end subroutine
 
 
-!8th order implicity Gauss-Legendre integrator, from Andrei
+!8th order implicity Gauss-Legendre integrator, from class
 subroutine gl8(y, dt)
 	integer, parameter :: s = 4, n = 4
 	real y(n), g(n,s), dt
