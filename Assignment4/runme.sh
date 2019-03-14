@@ -2,9 +2,9 @@ echo "compiling..."
 gfortran -c -fdefault-real-8 globalVars.f90
 gfortran -c -fdefault-real-8 gaussLeg.f90
 gfortran -c -fdefault-real-8 tester.f90
-gfortran -c -fdefault-real-8 fractal.f90 -lcfitsio
+gfortran -c -fdefault-real-8 ICSweep.f90 -lcfitsio
 gfortran -g tester.o gaussLeg.o globalVars.o -o tester 
-gfortran -g fractal.o gaussLeg.o globalVars.o -o fractal -lcfitsio
+gfortran -g ICSweep.o gaussLeg.o globalVars.o -o ICSweep -lcfitsio
 
 echo "running..."
 ./tester > output && cat output

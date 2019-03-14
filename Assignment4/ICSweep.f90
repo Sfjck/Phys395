@@ -1,24 +1,38 @@
 !compile with:
-!gfortran -c -fdefault-real-8 fractal.f90 -lcfitsio
-!link and run with:
-!gfortran -g fractal.o gaussLeg.o globalVars.o -o fractal && ./fractal > output2 && cat output2
+!gfortran -c -fdefault-real-8 ICSweep.f90 -lcfitsio
+!link with
+!gfortran -g ICSweep.o gaussLeg.o globalVars.o -o ICSweep
 
-program fractal
+program ICSweep
 use gaussLeg
 use globalVars
 implicit none
 
 !Variable declarations
 !Time step bigger here since we're running a LOT more simulations
+character(len=8000) :: arg
 real, parameter :: dt = 0.05
-integer, parameter :: N = 15, nx = 2*N, ny = 2*N !CHANGE N HERE FOR RESOLUTION
 real :: y(4), t, tMax, theta1, theta2
-integer i, j
+integer i, j, N, nx, ny, status
 real :: xrange(2) = [-pi, pi], yrange(2) = [-pi, pi]
 real(4), allocatable :: image(:,:,:)
-allocate(image(1,nx,ny))
 
 !Problem 3: Scan initial conditions of double pendulum for flip-time
+!Get input N for sweep division
+N = get_command_argument(1, arg)
+write (*,*) trim(arg)
+read (arg, *, iostat=status) N
+if (status == 0 .and. (N .ge. 1) .and. N .le. 1000) then
+	write (*,*) "Parses as integer: ", N
+	nx = 2*N
+	ny = 2*N
+	allocate(image(1,nx,ny))
+else 
+	write (*,*) "Input argument invalid, enter integer between 1 and 1000"
+	exit
+end if
+	
+!Do sweep, no zoom
 tMax = 1000.0*sqrt(l/gr)
 do i=-N+1, N
 	theta1 = pi * i/N
@@ -34,7 +48,7 @@ do i=-N+1, N
 		image(1, i+N, j+N) = t
 	end do
 end do
-call write2fits('fractal1.fits', image, xrange, yrange, ['N'])
+call write2fits('flipTime1.fits', image, xrange, yrange, ['N'])
 write(*,*)
 
 contains
