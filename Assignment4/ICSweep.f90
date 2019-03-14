@@ -9,11 +9,11 @@ use globalVars
 implicit none
 
 !Variable declarations
-!Time step bigger here since we're running a LOT more simulations
-real, parameter :: dt = 0.01
+!Bigger dt for many simulations, [ZoomX, ZoomY] are focal points of zooms
+real, parameter :: dt = 0.05, ZoomX = -0.99, ZoomY = 1.63
 real :: y(4), t, tMax, theta1, theta2
-integer i, j, N, nx, ny, status, numArgs
-character(len=8000) :: arg
+integer i, j, N, status, numArgs, zoomPower, zoom
+character(len=8000) :: arg, filename
 real :: xrange(2) = [-pi, pi], yrange(2) = [-pi, pi]
 real(4), allocatable :: image(:,:,:)
 
@@ -26,9 +26,7 @@ if (numArgs == 1) then
 	read (arg, *, iostat=status) N
 	if (status == 0 .and. (N .ge. 1) .and. N .le. 1000) then
 		write (*,*) "Sucessful input: ", N
-		nx = 2*N
-		ny = 2*N
-		allocate(image(1,nx,ny))
+		allocate(image(1,2*N+1,2*N+1))
 	else 
 		write (*,*) "Input argument invalid, enter an integer between 1 and 1000"
 		call exit
@@ -38,24 +36,45 @@ else
 	call exit
 end if
 	
-!Do sweep, no zoom
 tMax = 1000.0*sqrt(l/gr)
-do i=-N+1, N
-	theta1 = pi * i/N
-	do j=-N+1, N
-		t = 0.0
-		theta2 = pi * j/N
-!		write(*,*) theta1, theta2
-		y = [theta1, theta2, 0.0, 0.0]
-		do while ((abs(y(2)) .le. pi) .and. (t .le. tMax))
-			call gl8(y, dt)
-			t = t+dt
+!Do sweep, no zoom, can use symmetry
+!write (*,*) "Sweeping initial conditions for flip time, zoom =  0"
+!do i=0, N !1-sided sweep, use symmetry to halve run time
+!	theta1 = pi * i/N
+!	do j=-N, N
+!		t = 0.0
+!		theta2 = pi * j/N
+!		y = [theta1, theta2, 0.0, 0.0]
+!		do while ((abs(y(2)) .le. pi) .and. (t .le. tMax))
+!			call gl8(y, dt)
+!			t = t+dt
+!		end do
+!		image(1, N+1+i, N+1-j) = t
+!		image(1, N+1-i, N+1+j) = t !abusing symmetry
+!	end do
+!end do
+!call write2fits('flipTime0.fits', image, xrange, yrange, ['N'])
+
+!Do sweep, with zoom, can't use symmetry
+do zoomPower=1,3
+	zoom=3**zoomPower
+	write (*,'(x,a,i3)') "Sweeping initial conditions for flip time, zoom =", zoom
+	do i=-N, N
+		theta1 = (pi * i/N)/zoom + ZoomX
+		do j=-N, N
+			t = 0.0
+			theta2 = (pi * j/N)/zoom + ZoomY
+			y = [theta1, theta2, 0.0, 0.0]
+			do while ((abs(y(2)) .le. pi) .and. (t .le. tMax))
+				call gl8(y, dt)
+				t = t+dt
+			end do
+			image(1, N+1+i, N+1-j) = t
 		end do
-		image(1, i+N, j+N) = t
 	end do
+	write(filename, fmt='(a,i1,a)') 'flipTime', zoomPower, '.fits'
+	call write2fits(filename, image, xrange, yrange, ['N'])
 end do
-call write2fits('flipTime1.fits', image, xrange, yrange, ['N'])
-write(*,*)
 
 contains
 

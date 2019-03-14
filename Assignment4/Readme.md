@@ -6,13 +6,14 @@ To animate double pendulum (problem 2, optional):
 gnuplot makeAnimation.gpl
 to end animation early, spam ctrl+c in the terminal (may vary based on setup)
 
-For problem 3, output of time to flip data is in flipTimeX.fit, where X is level of zoom (1 is no zoom)
+For problem 3, output of time to flip data is in flipTimeX.fit, where 3^X is level of zoom (0 is no zoom)
 To reproduce fit files, use (IC = Initial Condition):
 ./ICSweep N
-Where N is an integer equal to HALF the .fit  image data dimension (eg. N=5 will produce 10x10 image)
-Roughly, the time taken is 5 minutes for N=10
+Where 2N+1 is the dimension of the .fit image
+(eg N=10 will produce an 11x11 image)
+The full sweep may take several minutes to hours to complete, depending on N
+Use N = 10 for low res, fast sweep (~5min)
 
 
 **To Do
-calc dt such that max error ~1e-6 with theta1=theta2=pi/2
 loops for zooms
