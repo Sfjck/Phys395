@@ -24,11 +24,11 @@ if (numArgs == 1) then
 	call get_command_argument(1, arg)
 	write (*,*) trim(arg)
 	read (arg, *, iostat=status) N
-	if (status == 0 .and. (N .ge. 1) .and. N .le. 1000) then
-		write (*,*) "Sucessful input: ", N
+	if (status == 0 .and. (N .ge. 1) .and. N .le. 500) then
+		write (*,'(x,a,i4)') "Sucessful input, N =", N
 		allocate(image(1,2*N+1,2*N+1))
 	else 
-		write (*,*) "Input argument invalid, enter an integer between 1 and 1000"
+		write (*,*) "Input argument invalid, enter an integer between 1 and 500"
 		call exit
 	end if
 else
@@ -38,22 +38,22 @@ end if
 	
 tMax = 1000.0*sqrt(l/gr)
 !Do sweep, no zoom, can use symmetry
-!write (*,*) "Sweeping initial conditions for flip time, zoom =  0"
-!do i=0, N !1-sided sweep, use symmetry to halve run time
-!	theta1 = pi * i/N
-!	do j=-N, N
-!		t = 0.0
-!		theta2 = pi * j/N
-!		y = [theta1, theta2, 0.0, 0.0]
-!		do while ((abs(y(2)) .le. pi) .and. (t .le. tMax))
-!			call gl8(y, dt)
-!			t = t+dt
-!		end do
-!		image(1, N+1+i, N+1-j) = t
-!		image(1, N+1-i, N+1+j) = t !abusing symmetry
-!	end do
-!end do
-!call write2fits('flipTime0.fits', image, xrange, yrange, ['N'])
+write (*,*) "Sweeping initial conditions for flip time, zoom =  0"
+do i=0, N !1-sided sweep, use symmetry to halve run time
+	theta1 = pi * i/N
+	do j=-N, N
+		t = 0.0
+		theta2 = pi * j/N
+		y = [theta1, theta2, 0.0, 0.0]
+		do while ((abs(y(2)) .le. pi) .and. (t .le. tMax))
+			call gl8(y, dt)
+			t = t+dt
+		end do
+		image(1, N+1+i, N+1-j) = t
+		image(1, N+1-i, N+1+j) = t !abusing symmetry
+	end do
+end do
+call write2fits('flipTime0.fits', image, xrange, yrange, ['N'])
 
 !Do sweep, with zoom, can't use symmetry
 do zoomPower=1,3

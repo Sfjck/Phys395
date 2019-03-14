@@ -1,19 +1,15 @@
-To compile and run (problems 1 & 2):
+**Problems 1 & 2, compile, run, and plot:
 bash runme.sh
-view results in plots.pdf
+View results in plots.pdf
 
-To animate double pendulum (problem 2, optional):
+**Problem 2 optional, make animation:
 gnuplot makeAnimation.gpl
-to end animation early, spam ctrl+c in the terminal (may vary based on setup)
+To end animation early, spam ctrl+c in the terminal (may vary based on setup)
 
-For problem 3, output of time to flip data is in flipTimeX.fit, where 3^X is level of zoom (0 is no zoom)
-To reproduce fit files, use (IC = Initial Condition):
+**Problem 3, output of time to flip data is in flipTimeX.fits, where 3^X is level of zoom (0 is no zoom). To reproduce fits files:
 ./ICSweep N
-Where 2N+1 is the dimension of the .fit image
-(eg N=10 will produce an 11x11 image)
+Replace N with 1 integer between 1 and 500 (inclusive)
+Where 2N+1 is the dimension of the .fits data
+(eg N=10 will produce an 21x21 image)
 The full sweep may take several minutes to hours to complete, depending on N
-Use N = 10 for low res, fast sweep (~5min)
-
-
-**To Do
-loops for zooms
+Use N = 10 for a low res, fast sweep (~5min)
