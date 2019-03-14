@@ -10,26 +10,32 @@ implicit none
 
 !Variable declarations
 !Time step bigger here since we're running a LOT more simulations
-character(len=8000) :: arg
-real, parameter :: dt = 0.05
+real, parameter :: dt = 0.01
 real :: y(4), t, tMax, theta1, theta2
-integer i, j, N, nx, ny, status
+integer i, j, N, nx, ny, status, numArgs
+character(len=8000) :: arg
 real :: xrange(2) = [-pi, pi], yrange(2) = [-pi, pi]
 real(4), allocatable :: image(:,:,:)
 
 !Problem 3: Scan initial conditions of double pendulum for flip-time
 !Get input N for sweep division
-N = get_command_argument(1, arg)
-write (*,*) trim(arg)
-read (arg, *, iostat=status) N
-if (status == 0 .and. (N .ge. 1) .and. N .le. 1000) then
-	write (*,*) "Parses as integer: ", N
-	nx = 2*N
-	ny = 2*N
-	allocate(image(1,nx,ny))
-else 
-	write (*,*) "Input argument invalid, enter integer between 1 and 1000"
-	exit
+numArgs = command_argument_count()
+if (numArgs == 1) then
+	call get_command_argument(1, arg)
+	write (*,*) trim(arg)
+	read (arg, *, iostat=status) N
+	if (status == 0 .and. (N .ge. 1) .and. N .le. 1000) then
+		write (*,*) "Sucessful input: ", N
+		nx = 2*N
+		ny = 2*N
+		allocate(image(1,nx,ny))
+	else 
+		write (*,*) "Input argument invalid, enter an integer between 1 and 1000"
+		call exit
+	end if
+else
+	write (*,*) "Incorrect number of input arguments, refer to readme.md"
+	call exit
 end if
 	
 !Do sweep, no zoom
@@ -39,7 +45,7 @@ do i=-N+1, N
 	do j=-N+1, N
 		t = 0.0
 		theta2 = pi * j/N
-		write(*,*) theta1, theta2
+!		write(*,*) theta1, theta2
 		y = [theta1, theta2, 0.0, 0.0]
 		do while ((abs(y(2)) .le. pi) .and. (t .le. tMax))
 			call gl8(y, dt)
