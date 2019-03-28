@@ -1,8 +1,8 @@
 !disc
 !compile with:
-!gfortran -c -fdefault-real-8 integrate.f90
+!gfortran -c -fdefault-real-8 integrator.f90
 
-module integrate
+module integrator
 use globalVars
 implicit none
 
@@ -14,11 +14,12 @@ subroutine integrate(E, init)
 	character(len=40) :: fileOdd, fileEven
 	
 	!determine file names, usually I do this in the tester for more modularity 
-	!but I'd have to pass the filenames as reference and there's no big difference.
-	write(fileOdd, 21) "E=", E, "_Init=(", init(1), "," init(2), ")_odd.dat"
-	write(fileEven, 21) "E=", E, "_Init=(", init(1), "," init(2), ")_even.dat"
-	open(unit=1, file=fileOdd)
-	open(unit=2, file=fileEven)
+	!but I'd have to pass the filenames as reference and there's a lot of files..
+	1 format (a,f3.1, a, f3.1, a, f3.1, a)
+	write(fileOdd,1) "Q1Out/E=", E, "_Init=(", init(1), ",", init(2), ")_odd.dat"
+	write(fileEven,1) "Q1Out/E=", E, "_Init=(", init(1), ",", init(2), ")_even.dat"
+	open(unit=1, file=fileOdd, status="replace", action="write")
+	open(unit=2, file=fileEven, status="replace", action="write")
 	
 	!using gl8 to integrate
 	x = 0.0
@@ -28,10 +29,10 @@ subroutine integrate(E, init)
 		call gl8(psi, h, x, E)
 		call gl8(psiMinus, -1.0*h, -1.0*x, E)
 		
-		write(1,*), x, (psi-psiMinus)/2.0 !odd parts
-		write(1,*), -1.0*x, -1.0*(psi-psiMinus)/2.0
-		write(2,*), x, (psi+psiMinus)/2.0 !even parts
-		write(2,*), -1.0*x, (psi+psiMinus)/2.0
+		write(1,*) x, (psi-psiMinus)/2.0 !odd parts
+		write(1,*) -1.0*x, -1.0*(psi-psiMinus)/2.0
+		write(2,*) x, (psi+psiMinus)/2.0 !even parts
+		write(2,*) -1.0*x, (psi+psiMinus)/2.0
 		x = x+h
 	end do
 	

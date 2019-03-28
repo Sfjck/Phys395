@@ -7,7 +7,7 @@
 
 program tester
 use globalVars
-use integrate
+use integrator
 implicit none
 
 !Variable declarations
@@ -18,7 +18,7 @@ integer :: i
 1 format (a,f3.1, a, f2.0, a, f2.0, a)
 
 !***************Problem 1***************
-write(*,*) "Problem 1: Calculating typical solutions of Psi_+ and Psi_-"
+write(*,*) "Problem 1: Calculating typical solutions of Psi_Odd and Psi_Even"
 write(*,*) "Refer to prob1.pdf for plots"
 
 init = [0.0, 1.0]
