@@ -7,25 +7,41 @@
 
 program tester
 use globalVars
-use integrator
+use integration
 implicit none
 
 !Variable declarations
-real :: init(2), init2(2)
 integer :: i
+real :: E
 
 !Format labels, x = space, a = chars, nfw.d = n (f)loats (w)idth (d)ecimals
-1 format (a,f3.1, a, f2.0, a, f2.0, a)
+1 format (a,f3.1, a)
+
 
 !***************Problem 1***************
-write(*,*) "Problem 1: Calculating typical solutions of Psi_Odd and Psi_Even"
-write(*,*) "Refer to prob1.pdf for plots"
+write(*,*) "Problem 1: Integrating schrodinger's equation from x=0 to inf"
+write(*,*) "Using V(x) = 1/2 * m *(wx)^2 with m = w = h = 1"
+write(*,*) "Eigenvalues are (n+1/2)hw = (n+1/2) with n = 0, 1, 2..."
+write(*,*) "prob1.pdf shows typical solutions of Psi where E is NOT an eigenvalue"
+write(*,*) "Boundary values of Psi are "
 
-init = [0.0, 1.0]
-init2 = [1.0, 0.0]
 do i=0,9
-	call integrate(0.2*i, init)
-	call integrate(0.2*i, init2)
+	E = 0.2*i
+	!open file to write, using odd initial condition
+	write(fileOdd,1) "Q1Out/E=", E, "_Init=(0,1)_odd.dat"
+	write(fileEven,1) "Q1Out/E=", E, "_Init=(0,1)_even.dat"
+	open(unit=1, file=fileOdd, status="replace", action="write")
+	open(unit=2, file=fileEven, status="replace", action="write")
+	call integrate(0.2*i, initOdd, verbose = .true.)
+	close(1); close(2)
+	
+	!now even initial conditions
+	write(fileOdd,1) "Q1Out/E=", E, "_Init=(1,0)_odd.dat"
+	write(fileEven,1) "Q1Out/E=", E, "_Init=(1,0)_even.dat"
+	open(unit=1, file=fileOdd, status="replace", action="write")
+	open(unit=2, file=fileEven, status="replace", action="write")
+	call integrate(0.2*i, initEven, verbose = .true.) !declared in globalVars
+	close(1); close(2)
 end do
 
 !***************Problem 2***************
