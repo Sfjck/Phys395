@@ -16,10 +16,12 @@ function bisect(Emin, Emax, init)
 	a = Emin; fa = fFunc(a, init)
 	b = Emax; fb = fFunc(b, init)
 	
+	! no eigenvalues found
 	if (fa(1)*fb(1) > 0) then
-		write(*,*) "No eigenvalues in defined intervals"
+		eigenFound = .false.
 		call abort
 	end if
+	eigenFound = .true.
 	
 	do while (abs(b-a) > eps)
 		c = (a+b)/2.0; fc = fFunc(c, init)
