@@ -13,9 +13,8 @@ function bisect(Emin, Emax, init)
 	real :: Emin, Emax, init(2)
 	real :: a, b, c, fa(2), fb(2), fc(2), bisect(2)
 	
-	a = Emin; fa = fFunc(a, init, verbose = .false.)
-	b = Emax; fb = fFunc(b, init, verbose = .false.)
-	
+	a = Emin; fa = fFunc(a, init)
+	b = Emax; fb = fFunc(b, init)
 	
 	if (fa(1)*fb(1) > 0) then
 		write(*,*) "No eigenvalues in defined intervals"
@@ -23,7 +22,7 @@ function bisect(Emin, Emax, init)
 	end if
 	
 	do while (abs(b-a) > eps)
-		c = (a+b)/2.0; fc = fFunc(c, init, verbose = .false.)
+		c = (a+b)/2.0; fc = fFunc(c, init)
 		if (abs(fc(1)) < 0.001) exit
 		if (fa(1)*fc(1) < 0.0) then
 			b = c
@@ -39,38 +38,46 @@ function bisect(Emin, Emax, init)
 end function 
 
 ! basically converts integrate into a function that returns f
-function fFunc(E, init, verbose)
+function fFunc(E, init)
 	real :: E, init(2), fFunc(2)
-	logical :: verbose
-	call integrate(E, init, verbose); fFunc = f
+	call integrate(E, init, problem = 0); fFunc = f
 end function
 
-subroutine integrate(E, init, verbose)
+subroutine integrate(E, init, problem)
 	real :: E, init(2)
-	logical :: verbose
+	integer :: problem
 	real :: x, norm
 	real :: Psi(2), PsiMinus(2) !PsiMinus = Psi(-x), to get odd/even
 
-	!using gl8 to integrate
+	!initialization
 	x = 0.0
 	Psi = init
 	PsiMinus = init
-	norm = Psi(1)**2	
+	norm = Psi(1)**2
 
 	!Psi is within 4 and either Psi or dPsi is above 0.1
 	do while ((abs(Psi(1)) < 4.0) .and. ((abs(Psi(1)) > 0.1) .or. (abs(Psi(2)) > 0.1)))
 		call gl8(Psi, x, dx, E)
-		call gl8(PsiMinus, -1.0*x, -1.0*dx, E) !integrate the other direction to get Psi(-x)
 		
-		!write to file, modulo skips some data points to speed up plotting
-		if ((verbose .eqv. .true.) .and. (modulo(x,modx) < dx)) then
-			write(1,*) x, (Psi-PsiMinus)/2.0 !odd part
-			write(2,*) x, (Psi+PsiMinus)/2.0 !even part
-		end if
+		!problem specific code, usually for writing to file
+		!modulo used to skip writing for speed, but still need to compute for accuracy
+		select case (problem)
+			case (1)
+				call gl8(PsiMinus, -1.0*x, -1.0*dx, E) !integrate other side to get Psi(-x)
+				if (modulo(x,modx) < dx) then !modulo to skip some points for speed
+					write(1,*) x, (Psi-PsiMinus)/2.0 !odd part
+					write(2,*) x, (Psi+PsiMinus)/2.0 !even part
+				end if
+			case (2)
+				if (modulo(x,modx) < dx) then
+					write(1,*) x, Psi(1), Psi(1)**2/(2.0*norm0)
+				end if
+		end select
+
 		x = x + dx
-		norm = norm + dx*(Psi(1)**2)
+		norm = norm + dx*(Psi(1)**2) !summation for normalization factor
 	end do
-	f = [Psi(1), norm] !computes violation at inf
+	f = [Psi(1), norm] !for bisection
 end subroutine
 
 !V of harmonic oscillator
@@ -87,6 +94,7 @@ subroutine evalf(Psi, dPsi, x, E)
 end subroutine evalf
 
 !8th order implicity Gauss-Legendre integrator, modified
+!8th is faster than 10th so...
 subroutine gl8(Psi, x, dx, E)
 	integer, parameter :: s = 4, n = 2
 	real Psi(n), g(n,s), x, dx, E

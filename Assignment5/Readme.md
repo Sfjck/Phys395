@@ -1,9 +1,19 @@
 Assignment 5
-Use the following command:
+Ensure the following empty folders exist in the directory. They should be part of the archive already.
+Q1Out/
+Q2Out/
+Q3Out/
+Q4Out/
+Q5Out/
+They are used to store the (many) output files from integration, and must be present or the code will crash.
+
+Then use the following command:
 bash runme.sh
 
-Problem 1:
-Ensure the empty folder "Q1Out" exists in the directory, or the code will crash.
-See outplot plot in "prob1.pdf":
-Psi_- is the odd component
-Psi_+ is the even component
+For outputs, look at the following files:
+output.txt
+prob1.pdf
+prob2.pdf
+prob3.pdf
+prob4.pdf
+prob5.pdf
