@@ -13,6 +13,7 @@ implicit none
 !Variable declarations
 integer :: i
 real :: E
+character(len=40) :: fileOdd, fileEven
 
 !Format labels, x = space, a = chars, nfw.d = n (f)loats (w)idth (d)ecimals
 1 format (a,f3.1, a)
@@ -27,7 +28,7 @@ write(*,*) "Boundary values of Psi are "
 
 do i=0,9
 	E = 0.2*i
-	!open file to write, using odd initial condition
+	!open file to write, using odd initial condition (declared as globalVar)
 	write(fileOdd,1) "Q1Out/E=", E, "_Init=(0,1)_odd.dat"
 	write(fileEven,1) "Q1Out/E=", E, "_Init=(0,1)_even.dat"
 	open(unit=1, file=fileOdd, status="replace", action="write")
@@ -40,7 +41,7 @@ do i=0,9
 	write(fileEven,1) "Q1Out/E=", E, "_Init=(1,0)_even.dat"
 	open(unit=1, file=fileOdd, status="replace", action="write")
 	open(unit=2, file=fileEven, status="replace", action="write")
-	call integrate(0.2*i, initEven, verbose = .true.) !declared in globalVars
+	call integrate(0.2*i, initEven, verbose = .true.) 
 	close(1); close(2)
 end do
 

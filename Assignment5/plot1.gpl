@@ -1,0 +1,39 @@
+#Problem 1:
+set terminal pdf
+set output 'prob1.pdf'
+
+set multiplot
+set xlabel "x"
+set ylabel "Psi_{odd}(x)"
+set yrange [-4:4]
+set title "Initial Conditions: Psi(0)=0, Psi_x(0)=1"
+set key left bottom Left maxrows 5
+plot for [i in "0.0 0.2 0.4 0.6 0.8 1.0 1.2 1.4 1.6 1.8"] 'Q1Out/E='.i.'_Init=(0,1)_odd.dat' u 1:2 w l title 'E='.i
+unset multiplot
+
+set multiplot
+set xlabel "x"
+set ylabel "Psi_{even}(x)"
+set yrange [-1:1]
+set title "Initial Conditions: Psi(0)=0, Psi_x(0)=1"
+set key left bottom Left maxrows 5
+plot for [i in "0.0 0.2 0.4 0.6 0.8 1.0 1.2 1.4 1.6 1.8"] 'Q1Out/E='.i.'_Init=(0,1)_even.dat' u 1:2 w l title 'E='.i
+unset multiplot
+
+set multiplot
+set xlabel "x"
+set ylabel "Psi_{odd}(x)"
+set yrange [-1:1]
+set title "Initial Conditions: Psi(0)=1, Psi_x(0)=0"
+set key left bottom Left maxrows 5
+plot for [i in "0.0 0.2 0.4 0.6 0.8 1.0 1.2 1.4 1.6 1.8"] 'Q1Out/E='.i.'_Init=(1,0)_odd.dat' u 1:2 w l title 'E='.i
+unset multiplot
+
+set multiplot
+set xlabel "x"
+set ylabel "Psi_{even}(x)"
+set yrange [-4:4]
+set title "Initial Conditions: Psi(0)=1, Psi_x(0)=0"
+set key left bottom Left maxrows 5
+plot for [i in "0.0 0.2 0.4 0.6 0.8 1.0 1.2 1.4 1.6 1.8"] 'Q1Out/E='.i.'_Init=(1,0)_even.dat' u 1:2 w l title 'E='.i
+unset multiplot

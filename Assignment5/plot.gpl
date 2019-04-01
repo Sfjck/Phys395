@@ -1,9 +1,0 @@
-#Problem 1:
-set terminal pdf
-set output 'prob1.pdf'
-
-set multiplot
-set xlabel "x"
-set ylabel "Psi_-(x)"
-set title "Initial Conditions: Psi(0)=0, Psi_x(0)=1"
-plot for [i in "0.0 0.2 0.4 0.6 0.8 1.0 1.2 1.4 1.6 1.8"] 'Q1Out/E='.i.'_Init=(0,1)_odd.dat' u 1:2 w d title 'E='.i

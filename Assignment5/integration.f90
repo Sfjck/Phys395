@@ -8,14 +8,13 @@ implicit none
 
 contains
 
-
-!simple bisection, from demo
+!simple bisection
 function bisect(Emin, Emax, init)
 	real :: Emin, Emax, init(2)
-	real :: a, b, c, fa(2), fb(2), fc(2)
+	real :: a, b, c, fa(2), fb(2), fc(2), bisect(2)
 	
-	a = Emin; fa = f(a, init, verbose = .false.)
-	b = Emax; fb = f(b, init, verbose = .false.)
+	a = Emin; fa = fFunc(a, init, verbose = .false.)
+	b = Emax; fb = fFunc(b, init, verbose = .false.)
 	
 	
 	if (fa(1)*fb(1) > 0) then
@@ -24,7 +23,7 @@ function bisect(Emin, Emax, init)
 	end if
 	
 	do while (abs(b-a) > eps)
-		c = (a+b)/2.0; fc = f(c, init, verbose = .false.)
+		c = (a+b)/2.0; fc = fFunc(c, init, verbose = .false.)
 		if (abs(fc(1)) < 0.001) exit
 		if (fa(1)*fc(1) < 0.0) then
 			b = c
@@ -40,10 +39,10 @@ function bisect(Emin, Emax, init)
 end function 
 
 ! basically converts integrate into a function that returns f
-function f(E, init, verbose)
-	real :: E, init(2)
+function fFunc(E, init, verbose)
+	real :: E, init(2), fFunc(2)
 	logical :: verbose
-	call integrate(E, init, verbose)
+	call integrate(E, init, verbose); fFunc = f
 end function
 
 subroutine integrate(E, init, verbose)
@@ -51,29 +50,27 @@ subroutine integrate(E, init, verbose)
 	logical :: verbose
 	real :: x, norm
 	real :: Psi(2), PsiMinus(2) !PsiMinus = Psi(-x), to get odd/even
-	character(len=40) :: fileOdd, fileEven
-		
+
 	!using gl8 to integrate
 	x = 0.0
 	Psi = init
 	PsiMinus = init
-	norm = Psi(1)**2
-	
+	norm = Psi(1)**2	
+
 	!Psi is within 4 and either Psi or dPsi is above 0.1
 	do while ((abs(Psi(1)) < 4.0) .and. ((abs(Psi(1)) > 0.1) .or. (abs(Psi(2)) > 0.1)))
 		call gl8(Psi, x, dx, E)
 		call gl8(PsiMinus, -1.0*x, -1.0*dx, E) !integrate the other direction to get Psi(-x)
 		
-		if (verbose == .true.) then
+		!write to file, modulo skips some data points to speed up plotting
+		if ((verbose .eqv. .true.) .and. (modulo(x,modx) < dx)) then
 			write(1,*) x, (Psi-PsiMinus)/2.0 !odd part
-!			write(1,*) -1.0*x, -1.0*(Psi-PsiMinus)/2.0
 			write(2,*) x, (Psi+PsiMinus)/2.0 !even part
-!			write(2,*) -1.0*x, (Psi+PsiMinus)/2.0
 		end if
 		x = x + dx
 		norm = norm + dx*(Psi(1)**2)
 	end do
-	f = [y(1), norm] !computes violation at inf
+	f = [Psi(1), norm] !computes violation at inf
 end subroutine
 
 !V of harmonic oscillator

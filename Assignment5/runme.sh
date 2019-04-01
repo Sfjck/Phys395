@@ -8,5 +8,6 @@ echo "running..."
 ./tester > output && cat output
 
 echo "plotting..."
+gnuplot plot1.gpl
 
-echo "All tasks omplete."
+echo "All tasks complete."
