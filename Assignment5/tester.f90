@@ -11,18 +11,19 @@ use integration
 implicit none
 
 !Variable declarations
-integer :: i, j
+integer :: i
 integer, parameter :: n=5
 real :: E, EMinOdd, EMinEven, ERange
-real :: y(2), EigenNormEven(n,2), EigenNormOdd(n,2)
-!NOTE: delete y(2)?
+real :: EigenNormEven(n,2), EigenNormOdd(n,2)
 character(len=80) :: fileOdd, fileEven, filePsi
 
 !Format labels for write
 1 format (a,f3.1, a)
 2 format (/, a)
 3 format (x, a6, 5f6.3)
+4 format (a,f4.1, a)
 
+!if (0 == 1) then !NOTE: remove in final version, bypass prev question for faster tests
 !***************Problem 1***************
 write(*,*) "Problem 1: Integrating schrodinger's equation from x=0 towards inf"
 write(*,*) "Using V(x) = 1/2 * m *(wx)^2 with m = w = h = 1"
@@ -57,7 +58,7 @@ do i = 1,n
 	EigenNormEven(i,:) = bisect(2.0*(i-1), 2.0*i, initEven)
 end do
 write(*,*) "Calculated eigenvalues: (expecting n+1/2, n=0,1,2...)"
-write(*,3) "Odd: ", EigenNormOdd(:,1)
+write(*,3) "Odd:  ", EigenNormOdd(:,1)
 write(*,3) "Even: ", EigenNormEven(:,1)
 
 !calculate Psi and PDF of Psi (ie |Psi|^2/Norm0)
@@ -80,49 +81,53 @@ end do
 !***************Problem 3***************
 write(*,2) "Problem 3: Integrating for Psi and |Psi|^2 with Anharmonic Potential"
 !determine the exact eigenvalues and nomalization factor
-i=1; j=1
 harmonic = .false. !use anharmonic V
 EMinOdd=0.0; EMinEven=0.0; ERange=1.0
-do while (i+j .le. 2*n) !NOTE: can use only i? from 1 to 5?
-	EigenNormOdd(i, :) =  (EMinOdd, EMinOdd + ERange, initOdd)
-	if (eigenFound .eqv. .false.) then
+do i = 1,n
+	eigenFound = .false.
+	do while (eigenFound .eqv. .false.)
+		EigenNormOdd(i, :) =  bisect(EMinOdd, EMinOdd + ERange, initOdd)
 		EMinOdd = EMinOdd + ERange
-	else
-		EMinOdd = EigenNormOdd(i, 1) + ERange !NOTE: might need to be much less? (epsilon diff from ERange)
-		i = i+1
-	end if
-	
-	EigenNormEven(j, :) = bisect(EMinEven, EMinEven + ERange, initEven)
-	if (eigenFound .eqv. .false.) then
+	end do
+	EMinOdd = EigenNormOdd(i, 1) + ERange
+
+	eigenFound = .false.
+	do while (eigenFound .eqv. .false.)
+		EigenNormEven(i, :) = bisect(EMinEven, EMinEven + ERange, initEven)
 		EMinEven = EMinEven + ERange
-	else
-		EMinEven = EigenNormEven(j, 1) + ERange
-	end if
+	end do
+	EMinEven = EigenNormEven(i, 1) + ERange
 end do
-write(*,*) "Calculated eigenvalues: (expecting WHO KNOWS!?)" !NOTE: find this out
-write(*,3) "Odd: ", EigenNormOdd(:,1)
+write(*,*) "Calculated eigenvalues: (expecting 0.4207 for ground state)"
+write(*,3) "Odd:  ", EigenNormOdd(:,1)
 write(*,3) "Even: ", EigenNormEven(:,1)
 
 !calculate Psi and PDF of Psi (ie |Psi|^2/Norm0)
 do i=1,n
 	!odd initial conditions
-	write(filePsi, 1) "Q3Out/PsiNorm, E=", EigenNormOdd(i,1), ".dat"
+	!different write formats for file name depending on digits in E
+	if (EigenNormOdd(i,1) < 10.0) then
+		write(filePsi, 1) "Q3Out/Psi, E=", EigenNormOdd(i,1), ".dat"
+	else
+		write(filePsi, 4) "Q3Out/Psi, E=", EigenNormOdd(i,1), ".dat"
+	end if
 	open(unit=1, file=filePsi, status="replace", action="write")
 	norm0 = EigenNormOdd(i,2)
 	call integrate(EigenNormOdd(i,1), initOdd, problem = 3)
 	close(1)
 
 	!even initial condition
-	write(filePsi, 1) "Q3Out/PsiNorm, E=", EigenNormEven(i,1), ".dat"
+	if (EigenNormEven(i,1) < 10.0) then
+		write(filePsi, 1) "Q3Out/Psi, E=", EigenNormEven(i,1), ".dat"
+	else
+		write(filePsi, 4) "Q3Out/Psi, E=", EigenNormEven(i,1), ".dat"
+	end if
 	open(unit=1, file=filePsi, status="replace", action="write")
 	norm0 = EigenNormEven(i,2)
 	call integrate(EigenNormEven(i,1), initEven, problem = 3)
 	close(1)
 end do
 
-
-	
-end do
 !***************Problem 4***************
 !***************Problem 5***************
 	

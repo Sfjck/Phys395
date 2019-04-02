@@ -10,5 +10,6 @@ echo "running... (This will take a while)"
 echo "plotting..."
 gnuplot plot1.gpl
 gnuplot plot2.gpl
+gnuplot plot3.gpl
 
 echo "All tasks complete."

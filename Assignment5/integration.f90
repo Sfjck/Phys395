@@ -15,11 +15,10 @@ function bisect(Emin, Emax, init)
 	
 	a = Emin; fa = fFunc(a, init)
 	b = Emax; fb = fFunc(b, init)
-	
 	! no eigenvalues found
 	if (fa(1)*fb(1) > 0) then
 		eigenFound = .false.
-		call abort
+		return
 	end if
 	eigenFound = .true.
 	
@@ -71,8 +70,7 @@ subroutine integrate(E, init, problem)
 					write(1,*) x, (Psi-PsiMinus)/2.0 !odd part
 					write(2,*) x, (Psi+PsiMinus)/2.0 !even part
 				end if
-			case (2)
-			case (3)
+			case (2,3)
 				if (modulo(x,modx) < dx) then
 					write(1,*) x, Psi(1), Psi(1)**2/(2.0*norm0)
 				end if				
