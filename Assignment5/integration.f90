@@ -1,4 +1,3 @@
-!disc
 !compile with:
 !gfortran -c -fdefault-real-8 integration.f90
 
@@ -84,7 +83,6 @@ subroutine integrate(E, init, problem)
 	end do
 	f = [Psi(1), norm] !for bisection
 end subroutine
-
 
 ! evaluate derivatives
 subroutine evalf(Psi, dPsi, x, E)

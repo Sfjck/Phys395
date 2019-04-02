@@ -5,25 +5,6 @@ module rayleigh
 use globalVars
 implicit none
 
-! initialize spectral operators, hamiltonian, gaussian
-!call initg(); call initl()
-!H = -L/2.0; forall (i=1:n) H(i,i) = -L(i,i)/2.0 + V(x(i))
-!gaussian = e**(-x**2/2.0)
-
-! initial guesses of the wavefunction, using Hermite polynomials and Gaussian
-!do i = 0,9
-!	psi = hermite(i) * gaussian
-
-	! try to relax using Rayleigh's iteration
-!	do k = 1,64
-!		eigenValue = dot_product(psi,matmul(H,psi))/dot_product(psi,psi)
-!		psi = lsolve(psi,eigenValue); psi = psi/sqrt(dot_product(psi,psi))
-!	!	call dump(psi)
-!	end do
-!	write (*,*) eigenValue
-!end do
-
-
 contains
 
 ! hermite polynomials, calculated using recursive loop
@@ -87,12 +68,7 @@ subroutine initl()
 	L = transpose(B)
 end subroutine
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! Rayleigh itertation solver
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 ! Rayleigh's iteration solving eigenvalue problem:
-! [-1/2 d^2/dx^2 + V(x)] psi(x) = eigenValue psi(x)
 function lsolve(psi, eigenValue)
 	real eigenValue, psi(n), lsolve(n), A(n,n), B(n)
 	integer i, pivot(n), status

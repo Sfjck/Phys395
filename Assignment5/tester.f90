@@ -12,19 +12,18 @@ use rayleigh
 implicit none
 
 !Variable declarations
-integer :: i, k
+integer :: i, j, k
 integer, parameter :: nn=5
 real :: E, EMinOdd, EMinEven, ERange
 real :: EigenNormEven(n,2), EigenNormOdd(n,2)
 character(len=80) :: fileOdd, fileEven, filePsi
-
-
 
 !Format labels for write
 1 format (a,f3.1, a)
 2 format (/, a)
 3 format (x, a6, 5f6.3)
 4 format (a,f4.1, a)
+5 format (f20.16)
 
 if(0==1) then !Note: bypass
 !***************Problem 1***************
@@ -137,25 +136,69 @@ write(*,2) "Problem 4: Using Rayleigh to Calculate Psi and |Psi|^2 with Harmonic
 ! initialize spectral operators
 call initg()
 call initl()
-
-! hamiltonian for harmonic oscillator
-harmonic = .false.
-H = -L/2.0; forall (i=1:n) H(i,i) = -L(i,i)/2.0 + V(x(i))
 gaussian = eu**(-x**2/2.0)
 
+! hamiltonian for harmonic oscillator
+harmonic = .true.
+H = -L/2.0; forall (i=1:n) H(i,i) = -L(i,i)/2.0 + V(x(i))
+
 !determine eigenvalues
+write(*,*) "Calculated eigenvalues: (expecting n+1/2, n=0,1,2...)"
 do i = 0,9
 	! initial guess of the wavefunction
 	psi = hermite(i) * gaussian
 
-	! try to relax using Rayleigh's iteration
-	do k = 1,64
+	! get Psi by relaxing with Rayleigh's iteration
+	do k = 1,50
 		E = dot_product(psi,matmul(H,psi))/dot_product(psi,psi)
-		psi = lsolve(psi,E); psi = psi/sqrt(dot_product(psi,psi))
-!		call dump(E, psi)
+		psi = lsolve(psi,E) 
+		psi = psi/sqrt(dot_product(psi,psi))
 	end do
-	write (*,*) E
+	psi2 = psi**2
+	psi2 = psi2/dot_product(psi2,psi2)
+
+	write (*,5) E
+	write(filePsi, 1) "Q4Out/Psi, E=", E, ".dat"
+	open(unit=1, file=filePsi, status="replace", action="write")
+	do j = 1,n
+		write (1,*) x(j), psi(j), psi2(j)
+	end do
+	close(1)
 end do
 
+!***************Problem 5***************
+write(*,2) "Problem 5: Using Rayleigh to Calculate Psi and |Psi|^2 with Anharmonic Potential"
+
+! hamiltonian for harmonic oscillator
+harmonic = .false.
+H = -L/2.0; forall (i=1:n) H(i,i) = -L(i,i)/2.0 + V(x(i))
+
+!determine eigenvalues
+write(*,*) "Calculated eigenvalues:"
+do i = 0,9
+	! initial guess of the wavefunction
+	psi = hermite(i) * gaussian
+
+	! get Psi by relaxing with Rayleigh's iteration
+	do k = 1,50
+		E = dot_product(psi,matmul(H,psi))/dot_product(psi,psi)
+		psi = lsolve(psi,E) 
+		psi = psi/sqrt(dot_product(psi,psi))
+	end do
+	psi2 = psi**2
+	psi2 = psi2/dot_product(psi2,psi2)
+
+	write (*,5) E
+	if (E < 10.0) then !different write formats for decimals
+		write(filePsi, 1) "Q5Out/Psi, E=", E, ".dat"
+	else
+		write(filePsi, 4) "Q5Out/Psi, E=", E, ".dat"
+	end if
+	open(unit=1, file=filePsi, status="replace", action="write")
+	do j = 1,n
+		write (1,*) x(j), psi(j), psi2(j)
+	end do
+	close(1)
+end do
 end program
 

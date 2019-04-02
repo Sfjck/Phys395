@@ -12,8 +12,7 @@ real :: f(2), norm0
 integer, parameter :: n = 150 !spectral order
 logical :: eigenFound, harmonic
 
-
-real, dimension(n) :: x, theta, psi, gaussian
+real, dimension(n) :: x, theta, psi, psi2, gaussian
 real, dimension (n,n) :: L, H
 
 contains
