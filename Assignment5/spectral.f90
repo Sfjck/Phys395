@@ -6,10 +6,9 @@ use globalVars
 use integration
 implicit none
 
-! collocation grids
-real, dimension(nS) :: x, psi, potential
-real, dimension(n,n) :: L, hamiltonian, identity, matinv
-real :: lamo
+real, dimension(nS) :: x, psi, potential, temp1, temp2, temp3
+real, dimension(nS,nS) :: L, hamiltonian, identity, matinv
+real :: lamo, h
 integer :: i
 
 ! initialize spectral operators
@@ -41,8 +40,9 @@ contains
 ! initialize the collocation grid
 subroutine initg()
 	integer i
-	forall(i=1:nS) x(i) = atanh(cos(pi*)
-	forall (i=1:n) theta(i) = pi*(n-i+0.5)/n; x = ell/tan(theta)
+	forall(i=1:nS) x(i) = atanh(cos(pi*(nS-i+0.5)/nS))
+	forall(i=1:nS) potential(i) = V(x(i))
+	h = (x(nS)-x(1))/nS
 end subroutine
 
 ! evaluate rational Chebyshev basis on a grid theta
