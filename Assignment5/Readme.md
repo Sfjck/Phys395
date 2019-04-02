@@ -22,6 +22,6 @@ Some explanations:
 For harmonic oscillator, eigenvalues should be (n+1/2)hw, n=0,1,2...
 For anharmonic oscillator, I couldn't find any literature on expected eigenvalues in higher energies with h defined as 1. But the ground state is:
 E0 = 1.060 * (lambda/4)^(1/3) * (h^2 / 2m)^(2/3)
-Plugging in lambda = h = m = 1 gives 0.420661
+Plugging in lambda = h = m = 1 gives ~0.42
 (Reference: A Modern Approach to Quantum Mechanics 2e, Townsend, p449)
-Of course, the other eigenvalues can be compared to results from Rayleigh.
+Of course, all eigenvalues from bisection can be compared to results from Rayleigh.
