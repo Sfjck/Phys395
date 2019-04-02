@@ -40,6 +40,7 @@ function bisect(Emin, Emax, init)
 end function 
 
 ! basically converts integrate into a function that returns f
+! also supresses file outputs
 function fFunc(E, init)
 	real :: E, init(2), fFunc(2)
 	call integrate(E, init, problem = 0); fFunc = f
@@ -60,8 +61,8 @@ subroutine integrate(E, init, problem)
 	!Psi is within 4 and either Psi or dPsi is above 0.1
 	do while ((abs(Psi(1)) < 4.0) .and. ((abs(Psi(1)) > 0.1) .or. (abs(Psi(2)) > 0.1)))
 		call gl8(Psi, x, dx, E)
-		
-		!problem specific code, usually for writing to file
+
+		!problem specific code
 		!modulo used to skip writing for speed, but still need to compute for accuracy
 		select case (problem)
 			case (1)
@@ -71,9 +72,10 @@ subroutine integrate(E, init, problem)
 					write(2,*) x, (Psi+PsiMinus)/2.0 !even part
 				end if
 			case (2)
+			case (3)
 				if (modulo(x,modx) < dx) then
 					write(1,*) x, Psi(1), Psi(1)**2/(2.0*norm0)
-				end if
+				end if				
 		end select
 
 		x = x + dx
@@ -82,17 +84,21 @@ subroutine integrate(E, init, problem)
 	f = [Psi(1), norm] !for bisection
 end subroutine
 
-!V of harmonic oscillator
-function Vh(x)
-	real :: Vh, x
-	Vh = 0.5*m*(w*x)**2.0
+!V of harmonic / anharmonic oscillator
+function V(x)
+	real :: V, x
+	if (harmonic .eqv. .true.) then
+		V = 0.5*m*(w*x)**2.0
+	else
+		V = 0.25*lambda*(x**4.0)
+	end if
 end function	
 	
 ! evaluate derivatives
 subroutine evalf(Psi, dPsi, x, E)
 	real :: Psi(2), dpsi(2), x, E
 	dPsi(1) = Psi(2)
-	dPsi(2) = Psi(1) * (Vh(x)-E)*2.0*m/(hBar**2.0) !2nd derivative of Psi
+	dPsi(2) = Psi(1) * (V(x)-E)*2.0*m/(hBar**2.0) !2nd derivative of Psi
 end subroutine evalf
 
 !8th order implicity Gauss-Legendre integrator, modified
