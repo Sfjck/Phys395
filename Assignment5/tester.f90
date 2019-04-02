@@ -12,7 +12,7 @@ implicit none
 
 !Variable declarations
 integer :: i
-integer, parameter :: n=5
+integer, parameter :: n=5, nR=150
 real :: E, EMinOdd, EMinEven, ERange
 real :: EigenNormEven(n,2), EigenNormOdd(n,2)
 character(len=80) :: fileOdd, fileEven, filePsi
@@ -23,7 +23,7 @@ character(len=80) :: fileOdd, fileEven, filePsi
 3 format (x, a6, 5f6.3)
 4 format (a,f4.1, a)
 
-!if (0 == 1) then !NOTE: remove in final version, bypass prev question for faster tests
+if (0 == 1) then !NOTE: remove in final version, bypass prev question for faster tests
 !***************Problem 1***************
 write(*,*) "Problem 1: Integrating schrodinger's equation from x=0 towards inf"
 write(*,*) "Using V(x) = 1/2 * m *(wx)^2 with m = w = h = 1"
@@ -127,7 +127,7 @@ do i=1,n
 	call integrate(EigenNormEven(i,1), initEven, problem = 3)
 	close(1)
 end do
-
+end if ! bypass
 !***************Problem 4***************
 !***************Problem 5***************
 	

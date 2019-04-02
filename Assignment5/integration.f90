@@ -90,7 +90,7 @@ function V(x)
 	else
 		V = 0.25*lambda*(x**4.0)
 	end if
-end function	
+end function
 	
 ! evaluate derivatives
 subroutine evalf(Psi, dPsi, x, E)

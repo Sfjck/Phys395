@@ -24,3 +24,4 @@ For anharmonic oscillator, I couldn't find any literature on expected eigenvalue
 E0 = 1.060 * (lambda/4)^(1/3) * (h^2 / 2m)^(2/3)
 Plugging in lambda = h = m = 1 gives 0.420661
 (Reference: A Modern Approach to Quantum Mechanics 2e, Townsend, p449)
+Of course, the other eigenvalues can be compared to results from Rayleigh.
