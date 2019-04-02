@@ -14,6 +14,6 @@ gnuplot plot1.gpl
 gnuplot plot2.gpl
 gnuplot plot3.gpl
 gnuplot plot4.gpl
-#gnuplot plot5.gpl
+gnuplot plot5.gpl
 
 echo "All tasks complete."

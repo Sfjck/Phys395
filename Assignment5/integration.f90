@@ -24,9 +24,8 @@ function bisect(Emin, Emax, init)
 	
 	do while (abs(b-a) > eps)
 		c = (a+b)/2.0; fc = fFunc(c, init)
-		!NOTE: Ridder's variation
 
-		if (abs(fc(1)) < eps) exit
+		if (abs(fc(1)) < 0.005) exit
 		if (fa(1)*fc(1) < 0.0) then
 			b = c
 			fb = fc
@@ -50,52 +49,52 @@ end function
 subroutine integrate(E, init, problem)
 	real :: E, init(2)
 	integer :: problem
-	real :: x, norm
+	real :: xx, norm !xx = x
 	real :: Psi(2), PsiMinus(2) !PsiMinus = Psi(-x), to get odd/even
 
 	!initialization
-	x = 0.0
+	xx = 0.0
 	Psi = init
 	PsiMinus = init
 	norm = Psi(1)**2
 
 	!Psi is within 4 and either Psi or dPsi is above 0.1
 	do while ((abs(Psi(1)) < 4.0) .and. ((abs(Psi(1)) > 0.1) .or. (abs(Psi(2)) > 0.1)))
-		call gl8(Psi, x, dx, E)
+		call gl8(Psi, xx, dx, E)
 
 		!problem specific code
 		!modulo used to skip writing for speed, but still need to compute for accuracy
 		select case (problem)
 			case (1)
-				call gl8(PsiMinus, -1.0*x, -1.0*dx, E) !integrate other side to get Psi(-x)
-				if (modulo(x,modx) < eps) then
-					write(1,*) x, (Psi-PsiMinus)/2.0 !odd part
-					write(2,*) x, (Psi+PsiMinus)/2.0 !even part
+				call gl8(PsiMinus, -1.0*xx, -1.0*dx, E) !integrate other side to get Psi(-x)
+				if (modulo(xx,modx) < dx) then
+					write(1,*) xx, (Psi-PsiMinus)/2.0 !odd part
+					write(2,*) xx, (Psi+PsiMinus)/2.0 !even part
 				end if
 			case (2,3)
-				if (modulo(x,modx) < eps) then
-					write(1,*) x, Psi(1), Psi(1)**2/(2.0*norm0)
+				if (modulo(xx,modx) < dx) then
+					write(1,*) xx, Psi(1), Psi(1)**2/(2.0*norm0)
 				end if				
 		end select
 
-		x = x + dx
+		xx = xx + dx
 		norm = norm + dx*(Psi(1)**2) !summation for normalization factor
 	end do
 	f = [Psi(1), norm] !for bisection
 end subroutine
 
-! evaluate derivatives
-subroutine evalf(Psi, dPsi, x, E)
-	real :: Psi(2), dpsi(2), x, E
+! evaluate derivatives, xx = x
+subroutine evalf(Psi, dPsi, xx, E)
+	real :: Psi(2), dpsi(2), xx, E
 	dPsi(1) = Psi(2)
-	dPsi(2) = Psi(1) * (V(x)-E)*2.0*m/(hBar**2.0)
+	dPsi(2) = Psi(1) * (V(xx)-E)*2.0*m/(hBar**2.0)
 end subroutine evalf
 
 !8th order implicity Gauss-Legendre integrator, modified
 !8th is faster than 10th so...
-subroutine gl8(Psi, x, dx, E)
+subroutine gl8(Psi, xx, dx, E)
 	integer, parameter :: s = 4, n = 2
-	real Psi(n), g(n,s), x, dx, E
+	real Psi(n), g(n,s), xx, dx, E !xx = x
 	integer i, k
 	
 	! Butcher tableau for 8th order Gauss-Legendre method
@@ -117,7 +116,7 @@ subroutine gl8(Psi, x, dx, E)
 	do k = 1,16
 		g = matmul(g,a)
 		do i = 1,s
-			call evalf(Psi + g(:,i)*dx, g(:,i), x, E)
+			call evalf(Psi + g(:,i)*dx, g(:,i), xx, E)
 		end do
 	end do
         

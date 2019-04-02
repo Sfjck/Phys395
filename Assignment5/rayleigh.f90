@@ -69,13 +69,13 @@ subroutine initl()
 end subroutine
 
 ! Rayleigh's iteration solving eigenvalue problem:
-function lsolve(psi, eigenValue)
-	real eigenValue, psi(n), lsolve(n), A(n,n), B(n)
+function lsolve(psiV, eigenValue)
+	real eigenValue, psiV(n), lsolve(n), A(n,n), B(n)
 	integer i, pivot(n), status
 	
 	! linear improvement inflating eigenvector
 	A = H; forall (i=1:n) A(i,i) = H(i,i) - eigenValue
-	B = psi
+	B = psiV
 	
 	! find linear operator matrix
         status = 0; select case (kind(A))
@@ -89,19 +89,4 @@ function lsolve(psi, eigenValue)
         
         lsolve = B
 end function
-
-! dump the solution and its residual
-subroutine dump(psi, eigenValue)
-	real psi(n), delta(n), eigenValue
-	integer i
-	
-	delta = matmul(H,psi) - eigenValue*psi
-	
-	do i = 1,n
-		write (*,'(3g24.16)') x(i), psi(i), delta(i)
-	end do
-	
-	write (*,*) ""; write (*,*) ""
-end subroutine
-
 end module

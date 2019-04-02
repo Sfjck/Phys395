@@ -15,8 +15,9 @@ implicit none
 integer :: i, j, k
 integer, parameter :: nn=5
 real :: E, EMinOdd, EMinEven, ERange
-real :: EigenNormEven(n,2), EigenNormOdd(n,2)
-character(len=80) :: fileOdd, fileEven, filePsi
+real, dimension(nn,2) :: EigenNormEven, EigenNormOdd
+real, dimension(n) :: gaussian, psiV, psiVN !V is for vector, N is norm
+character(len=100) :: fileOdd, fileEven, filePsi
 
 !Format labels for write
 1 format (a,f3.1, a)
@@ -25,7 +26,6 @@ character(len=80) :: fileOdd, fileEven, filePsi
 4 format (a,f4.1, a)
 5 format (f20.16)
 
-if(0==1) then !Note: bypass
 !***************Problem 1***************
 write(*,*) "Problem 1: Integrating schrodinger's equation from x=0 towards inf"
 write(*,*) "Using V(x) = 1/2 * m *(wx)^2 with m = w = h = 1"
@@ -33,8 +33,8 @@ write(*,*) "Eigenvalues expected to be (n+1/2)hw = (n+1/2) with n = 0, 1, 2..."
 write(*,*) "prob1.pdf shows typical solutions of Psi (odd and even) where E is NOT an eigenvalue"
 
 harmonic = .true. !use harmonic V
-do i=0,9 !NOTE
-	E = 0.2*i
+do i=1,2*nn
+	E = 0.2*(i-1)
 	!open file to write, using odd initial condition (declared as globalVar)
 	write(fileOdd,1) "Q1Out/E=", E, "_Init=(0,1)_odd.dat"
 	write(fileEven,1) "Q1Out/E=", E, "_Init=(0,1)_even.dat"
@@ -62,7 +62,6 @@ end do
 write(*,*) "Calculated eigenvalues: (expecting n+1/2, n=0,1,2...)"
 write(*,3) "Even: ", EigenNormEven(:,1)
 write(*,3) "Odd:  ", EigenNormOdd(:,1)
-
 !calculate Psi and PDF of Psi (ie |Psi|^2/Norm0)
 do i = 1,nn
 	!odd initial conditions
@@ -129,7 +128,6 @@ do i=1,nn
 	call integrate(EigenNormEven(i,1), initEven, problem = 3)
 	close(1)
 end do
-end if
 
 !***************Problem 4***************
 write(*,2) "Problem 4: Using Rayleigh to Calculate Psi and |Psi|^2 with Harmonic Potential"
@@ -144,24 +142,24 @@ H = -L/2.0; forall (i=1:n) H(i,i) = -L(i,i)/2.0 + V(x(i))
 
 !determine eigenvalues
 write(*,*) "Calculated eigenvalues: (expecting n+1/2, n=0,1,2...)"
-do i = 0,9
+do i = 0,2*nn-1
 	! initial guess of the wavefunction
-	psi = hermite(i) * gaussian
+	psiV = hermite(i) * gaussian
 
 	! get Psi by relaxing with Rayleigh's iteration
 	do k = 1,50
-		E = dot_product(psi,matmul(H,psi))/dot_product(psi,psi)
-		psi = lsolve(psi,E) 
-		psi = psi/sqrt(dot_product(psi,psi))
+		E = dot_product(psiV,matmul(H,psiV))/dot_product(psiV,psiV)
+		psiV = lsolve(psiV,E) 
+		psiV = psiV/sqrt(dot_product(psiV,psiV))
 	end do
-	psi2 = psi**2
-	psi2 = psi2/dot_product(psi2,psi2)
+	psiVN = psiV**2
+	psiVN = psiVN/dot_product(psiVN,psiVN)
 
 	write (*,5) E
 	write(filePsi, 1) "Q4Out/Psi, E=", E, ".dat"
 	open(unit=1, file=filePsi, status="replace", action="write")
 	do j = 1,n
-		write (1,*) x(j), psi(j), psi2(j)
+		write (1,*) x(j), psiV(j), psiVN(j)
 	end do
 	close(1)
 end do
@@ -175,18 +173,18 @@ H = -L/2.0; forall (i=1:n) H(i,i) = -L(i,i)/2.0 + V(x(i))
 
 !determine eigenvalues
 write(*,*) "Calculated eigenvalues:"
-do i = 0,9
+do i = 0,2*nn-1
 	! initial guess of the wavefunction
-	psi = hermite(i) * gaussian
+	psiV = hermite(i) * gaussian
 
 	! get Psi by relaxing with Rayleigh's iteration
 	do k = 1,50
-		E = dot_product(psi,matmul(H,psi))/dot_product(psi,psi)
-		psi = lsolve(psi,E) 
-		psi = psi/sqrt(dot_product(psi,psi))
+		E = dot_product(psiV,matmul(H,psiV))/dot_product(psiV,psiV)
+		psiV = lsolve(psiV,E) 
+		psiV = psiV/sqrt(dot_product(psiV,psiV))
 	end do
-	psi2 = psi**2
-	psi2 = psi2/dot_product(psi2,psi2)
+	psiVN = psiV**2
+	psiVN = psiVN/dot_product(psiVN,psiVN)
 
 	write (*,5) E
 	if (E < 10.0) then !different write formats for decimals
@@ -196,7 +194,7 @@ do i = 0,9
 	end if
 	open(unit=1, file=filePsi, status="replace", action="write")
 	do j = 1,n
-		write (1,*) x(j), psi(j), psi2(j)
+		write (1,*) x(j), psiV(j), psiVN(j)
 	end do
 	close(1)
 end do

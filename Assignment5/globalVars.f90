@@ -12,18 +12,18 @@ real :: f(2), norm0
 integer, parameter :: n = 150 !spectral order
 logical :: eigenFound, harmonic
 
-real, dimension(n) :: x, theta, psi, psi2, gaussian
-real, dimension (n,n) :: L, H
+real, dimension(n) :: x, theta
+real, dimension(n,n) :: L, H
 
 contains
 
 !V of harmonic / anharmonic oscillator
-pure function V(x);	intent(in) x
-	real :: V, x
+pure function V(xx);	intent(in) xx
+	real :: V, xx
 	if (harmonic .eqv. .true.) then
-		V = 0.5*m*(w*x)**2.0
+		V = 0.5*m*(w*xx)**2.0
 	else
-		V = 0.25*lambda*(x**4.0)
+		V = 0.25*lambda*(xx**4.0)
 	end if
 end function
 
