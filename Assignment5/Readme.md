@@ -19,7 +19,7 @@ prob4.pdf
 prob5.pdf
 
 Some explanations:
-For harmonic oscillator, eigenvalues should be (n+1/2)hw, n=0,1,2...
+For harmonic oscillator, eigenvalues are (n+1/2)hw, n=0,1,2...
 For anharmonic oscillator, I couldn't find any literature on expected eigenvalues in higher energies with h defined as 1. But the ground state is:
 E0 = 1.060 * (lambda/4)^(1/3) * (h^2 / 2m)^(2/3)
 Plugging in lambda = h = m = 1 gives ~0.42

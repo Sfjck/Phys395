@@ -8,14 +8,17 @@
 program tester
 use globalVars
 use integration
+use rayleigh
 implicit none
 
 !Variable declarations
-integer :: i
-integer, parameter :: n=5, nR=150
+integer :: i, k
+integer, parameter :: nn=5
 real :: E, EMinOdd, EMinEven, ERange
 real :: EigenNormEven(n,2), EigenNormOdd(n,2)
 character(len=80) :: fileOdd, fileEven, filePsi
+
+
 
 !Format labels for write
 1 format (a,f3.1, a)
@@ -23,15 +26,15 @@ character(len=80) :: fileOdd, fileEven, filePsi
 3 format (x, a6, 5f6.3)
 4 format (a,f4.1, a)
 
-if (0 == 1) then !NOTE: remove in final version, bypass prev question for faster tests
+if(0==1) then !Note: bypass
 !***************Problem 1***************
 write(*,*) "Problem 1: Integrating schrodinger's equation from x=0 towards inf"
 write(*,*) "Using V(x) = 1/2 * m *(wx)^2 with m = w = h = 1"
-write(*,*) "Eigenvalues are (n+1/2)hw = (n+1/2) with n = 0, 1, 2..."
-write(*,*) "prob1.pdf shows typical solutions of Psi where E is NOT an eigenvalue"
+write(*,*) "Eigenvalues expected to be (n+1/2)hw = (n+1/2) with n = 0, 1, 2..."
+write(*,*) "prob1.pdf shows typical solutions of Psi (odd and even) where E is NOT an eigenvalue"
 
 harmonic = .true. !use harmonic V
-do i=0,9
+do i=0,9 !NOTE
 	E = 0.2*i
 	!open file to write, using odd initial condition (declared as globalVar)
 	write(fileOdd,1) "Q1Out/E=", E, "_Init=(0,1)_odd.dat"
@@ -53,16 +56,16 @@ end do
 !***************Problem 2***************
 write(*,2) "Problem 2: Integrating for Psi and |Psi|^2 with Harmonic Potential"
 !determine the exact eigenvalues (n+1/2) and nomalization factor
-do i = 1,n
+do i = 1,nn
 	EigenNormOdd(i,:) = bisect(2.0*(i-1), 2.0*i, initOdd)
 	EigenNormEven(i,:) = bisect(2.0*(i-1), 2.0*i, initEven)
 end do
 write(*,*) "Calculated eigenvalues: (expecting n+1/2, n=0,1,2...)"
-write(*,3) "Odd:  ", EigenNormOdd(:,1)
 write(*,3) "Even: ", EigenNormEven(:,1)
+write(*,3) "Odd:  ", EigenNormOdd(:,1)
 
 !calculate Psi and PDF of Psi (ie |Psi|^2/Norm0)
-do i = 1,n
+do i = 1,nn
 	!odd initial conditions
 	write(filePsi, 1) "Q2Out/Psi, E=", EigenNormOdd(i,1), ".dat"
 	open(unit=1, file=filePsi, status="replace", action="write")
@@ -83,7 +86,7 @@ write(*,2) "Problem 3: Integrating for Psi and |Psi|^2 with Anharmonic Potential
 !determine the exact eigenvalues and nomalization factor
 harmonic = .false. !use anharmonic V
 EMinOdd=0.0; EMinEven=0.0; ERange=1.0
-do i = 1,n
+do i = 1,nn
 	eigenFound = .false.
 	do while (eigenFound .eqv. .false.)
 		EigenNormOdd(i, :) =  bisect(EMinOdd, EMinOdd + ERange, initOdd)
@@ -99,11 +102,11 @@ do i = 1,n
 	EMinEven = EigenNormEven(i, 1) + ERange
 end do
 write(*,*) "Calculated eigenvalues: (expecting 0.4207 for ground state)"
-write(*,3) "Odd:  ", EigenNormOdd(:,1)
 write(*,3) "Even: ", EigenNormEven(:,1)
+write(*,3) "Odd:  ", EigenNormOdd(:,1)
 
 !calculate Psi and PDF of Psi (ie |Psi|^2/Norm0)
-do i=1,n
+do i=1,nn
 	!odd initial conditions
 	!different write formats for file name depending on digits in E
 	if (EigenNormOdd(i,1) < 10.0) then
@@ -127,10 +130,32 @@ do i=1,n
 	call integrate(EigenNormEven(i,1), initEven, problem = 3)
 	close(1)
 end do
-end if ! bypass
+end if
+
 !***************Problem 4***************
-!***************Problem 5***************
-	
+write(*,2) "Problem 4: Using Rayleigh to Calculate Psi and |Psi|^2 with Harmonic Potential"
+! initialize spectral operators
+call initg()
+call initl()
+
+! hamiltonian for harmonic oscillator
+harmonic = .false.
+H = -L/2.0; forall (i=1:n) H(i,i) = -L(i,i)/2.0 + V(x(i))
+gaussian = eu**(-x**2/2.0)
+
+!determine eigenvalues
+do i = 0,9
+	! initial guess of the wavefunction
+	psi = hermite(i) * gaussian
+
+	! try to relax using Rayleigh's iteration
+	do k = 1,64
+		E = dot_product(psi,matmul(H,psi))/dot_product(psi,psi)
+		psi = lsolve(psi,E); psi = psi/sqrt(dot_product(psi,psi))
+!		call dump(E, psi)
+	end do
+	write (*,*) E
+end do
 
 end program
 

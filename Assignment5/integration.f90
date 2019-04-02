@@ -8,14 +8,15 @@ implicit none
 
 contains
 
-!simple bisection
+!simple bisection search
 function bisect(Emin, Emax, init)
 	real :: Emin, Emax, init(2)
-	real :: a, b, c, fa(2), fb(2), fc(2), bisect(2)
+	real :: a, b, c, fa(2), fb(2), fc(2), bisect(2) !2nd element for norm factor
 	
 	a = Emin; fa = fFunc(a, init)
 	b = Emax; fb = fFunc(b, init)
-	! no eigenvalues found
+
+	! root not bracketed, no eigenvalues found
 	if (fa(1)*fb(1) > 0) then
 		eigenFound = .false.
 		return
@@ -24,7 +25,9 @@ function bisect(Emin, Emax, init)
 	
 	do while (abs(b-a) > eps)
 		c = (a+b)/2.0; fc = fFunc(c, init)
-		if (abs(fc(1)) < 0.001) exit
+		!NOTE: Ridder's variation
+
+		if (abs(fc(1)) < eps) exit
 		if (fa(1)*fc(1) < 0.0) then
 			b = c
 			fb = fc
@@ -66,12 +69,12 @@ subroutine integrate(E, init, problem)
 		select case (problem)
 			case (1)
 				call gl8(PsiMinus, -1.0*x, -1.0*dx, E) !integrate other side to get Psi(-x)
-				if (modulo(x,modx) < dx) then !modulo to skip some points for speed
+				if (modulo(x,modx) < eps) then
 					write(1,*) x, (Psi-PsiMinus)/2.0 !odd part
 					write(2,*) x, (Psi+PsiMinus)/2.0 !even part
 				end if
 			case (2,3)
-				if (modulo(x,modx) < dx) then
+				if (modulo(x,modx) < eps) then
 					write(1,*) x, Psi(1), Psi(1)**2/(2.0*norm0)
 				end if				
 		end select
@@ -82,21 +85,12 @@ subroutine integrate(E, init, problem)
 	f = [Psi(1), norm] !for bisection
 end subroutine
 
-!V of harmonic / anharmonic oscillator
-function V(x)
-	real :: V, x
-	if (harmonic .eqv. .true.) then
-		V = 0.5*m*(w*x)**2.0
-	else
-		V = 0.25*lambda*(x**4.0)
-	end if
-end function
-	
+
 ! evaluate derivatives
 subroutine evalf(Psi, dPsi, x, E)
 	real :: Psi(2), dpsi(2), x, E
 	dPsi(1) = Psi(2)
-	dPsi(2) = Psi(1) * (V(x)-E)*2.0*m/(hBar**2.0) !2nd derivative of Psi
+	dPsi(2) = Psi(1) * (V(x)-E)*2.0*m/(hBar**2.0)
 end subroutine evalf
 
 !8th order implicity Gauss-Legendre integrator, modified

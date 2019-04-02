@@ -1,56 +1,30 @@
 ! rayleigh.f90  -  Rayleigh iteration solver for eigenvalue problem
 ! compile with: gfortran -O3 -fdefault-real-8 rayleigh.f90 -llapack
 
-program rayleigh
+module rayleigh
+use globalVars
 implicit none
 
-! order of the spectral scheme
-integer, parameter :: n = 150
-
-! scale of compactification
-real, parameter :: ell = 1.0
-
-! this is what you think it is...
-real, parameter :: pi = 3.14159265, e = 2.71828
-
-! collocation grids
-real, dimension(n) :: x, theta, psi, gaussian
-
-! second derivative operator
-real, dimension (n,n) :: L, H
-
-real lambda
-integer i, k
-
 ! initialize spectral operators, hamiltonian, gaussian
-call initg(); call initl()
-H = -L/2.0; forall (i=1:n) H(i,i) = -L(i,i)/2.0 + V(x(i))
-gaussian = e**(-x**2/2.0)
+!call initg(); call initl()
+!H = -L/2.0; forall (i=1:n) H(i,i) = -L(i,i)/2.0 + V(x(i))
+!gaussian = e**(-x**2/2.0)
 
 ! initial guesses of the wavefunction, using Hermite polynomials and Gaussian
-do i = 0,9
-!	call hermiteLUT(i)
-	psi = hermite(i) * gaussian
+!do i = 0,9
+!	psi = hermite(i) * gaussian
 
 	! try to relax using Rayleigh's iteration
-	do k = 1,64
-		lambda = dot_product(psi,matmul(H,psi))/dot_product(psi,psi)
-		psi = lsolve(psi,lambda); psi = psi/sqrt(dot_product(psi,psi))
-	!	call dump(psi)
-	end do
-	write (*,*) lambda
-end do
+!	do k = 1,64
+!		eigenValue = dot_product(psi,matmul(H,psi))/dot_product(psi,psi)
+!		psi = lsolve(psi,eigenValue); psi = psi/sqrt(dot_product(psi,psi))
+!	!	call dump(psi)
+!	end do
+!	write (*,*) eigenValue
+!end do
 
 
 contains
-
-! potential, harmonic or not
-pure function V(x); intent(in) x
-	real V, x
-	
-	V = x*x/2.0
-!	V = 0.25 * x**4.0
-end function
 
 ! hermite polynomials, calculated using recursive loop
  function hermite(i); intent(in) i
@@ -70,27 +44,7 @@ end function
 			hermite = hermiteNext
 		end do
 	end if
-
-	select case (i)
-!		case(0); hermite = 2**0*x**0
-!		case(1); hermite = 2**1*x**1
-!		case(2); hermite = 2**2*x**2 - 2
-!		case(3); hermite = 2^i*x**i - 12*x
-!		case(4); hermite = 2^i*x**i - 48*x**2 + 12
-!		case(5); hermite = 2^i*x**i - 160*x**3 + 120*x
-! 		case(6); hermite = 2^i*x**i - 480*x**4 + 720*x**2 - 120
-!		case(7); hermite = 2^i*x**i - 1344*x**5
-!		case(8); hermite = 2^i*x**i
-!		case(9); hermite = 2^i*x**i
-!		case default; hermite = 0
-	end select
 end function
-
-	
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! spectral grid, basis functions and derivative operators
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ! initialize the collocation grid
 subroutine initg()
@@ -138,13 +92,13 @@ end subroutine
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ! Rayleigh's iteration solving eigenvalue problem:
-! [-1/2 d^2/dx^2 + V(x)] psi(x) = lambda psi(x)
-function lsolve(psi, lambda)
-	real lambda, psi(n), lsolve(n), A(n,n), B(n)
+! [-1/2 d^2/dx^2 + V(x)] psi(x) = eigenValue psi(x)
+function lsolve(psi, eigenValue)
+	real eigenValue, psi(n), lsolve(n), A(n,n), B(n)
 	integer i, pivot(n), status
 	
 	! linear improvement inflating eigenvector
-	A = H; forall (i=1:n) A(i,i) = H(i,i) - lambda
+	A = H; forall (i=1:n) A(i,i) = H(i,i) - eigenValue
 	B = psi
 	
 	! find linear operator matrix
@@ -161,10 +115,11 @@ function lsolve(psi, lambda)
 end function
 
 ! dump the solution and its residual
-subroutine dump(psi)
-	real psi(n), delta(n); integer i
+subroutine dump(psi, eigenValue)
+	real psi(n), delta(n), eigenValue
+	integer i
 	
-	delta = matmul(H,psi) - lambda*psi
+	delta = matmul(H,psi) - eigenValue*psi
 	
 	do i = 1,n
 		write (*,'(3g24.16)') x(i), psi(i), delta(i)
@@ -173,4 +128,4 @@ subroutine dump(psi)
 	write (*,*) ""; write (*,*) ""
 end subroutine
 
-end program
+end module
