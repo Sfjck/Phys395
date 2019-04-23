@@ -1,0 +1,9 @@
+ Problem 1: Use Newton's method to solve cos(x)-x/5 = 0 to 1e-12 precision
+ Root x1 =  -3.837467106499
+ Root x2 =  -1.977383029329
+ Root x3 =   1.306440008370
+
+ Problem 2: Use bracketed search with phi to minimize/maximize x^4+3x^3-4x^2-3x+4
+ Minimum (x1, y1) = ( -2.857974729084, -23.413591017422)
+ Maximum (x2, y2) = ( -0.291690316982,   4.467523272135)
+ Minimum (x3, y3) = (  0.899665057060,   0.903098995288)
