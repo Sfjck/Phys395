@@ -11,5 +11,6 @@ echo "running..."
 
 echo "plotting..."
 gnuplot plot3.gpl
+gnuplot plot4.gpl
 
 echo "plots complete."

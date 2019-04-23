@@ -10,7 +10,7 @@ implicit none
 
 !Variable declarations
 !Time step such that abs(E/E0-1) < 10^-12 for any initial cond
-real, parameter :: dt = 0.003, eps = 1.0e-6
+real, parameter :: dt = 0.003, eps = 1.0e-4
 real y(2), dydt(2), E0, t, tMax
 integer i
 
@@ -43,15 +43,31 @@ do while(t .le. tMax)
 	call gl8(y, dt)
 	t = t+dt
 end do
+close(1)
+close(2)
 
-!write (*,3) "Problem 4: Find period of partcile with different initial conditions"
-!write (*,*) "Initial conditions: xi = i/10*a, v=0, m=1"
-!do i = 1,50
-!	y = 
+write (*,3) "Problem 4: Find period of partcile with different initial conditions"
+write (*,*) "Initial conditions: xi = i/10*a, v=0, m=1"
 
+open(unit=1, file="periods.csv", status="replace", action="write")
+write(1,*) "E0", ",", "T"
+do i = 1,50
+	y = [0.1*i*a, 0.0]
+	dydt = [0.0, 0.0]
+	call evalf(y, dydt)
+	E0 = Energy
+	t = 0
 
+	!integrate until partcile reaches "other side", which is half period
+	do while(abs(y(1)+0.1*i*a) .ge. eps)
+		call gl8(y, dt)
+		t = t+dt
+	end do
+	write(1,*) E0, ",", 2.0*t, ",", y(1)
+end do
+close(1)
 
-write (*,*) "Output data generation for problems 3 and 4 complete."
+write (*,*) "Data generation for problems 3 and 4 complete."
 
 end program
 
