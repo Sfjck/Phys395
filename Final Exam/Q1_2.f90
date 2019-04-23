@@ -3,7 +3,7 @@
 !link and run with:
 !gfortran Q1_2.o newtonMethod.o bracketSearch.o && ./Q1_2 > output1_2 && cat output1_2
 
-program tester
+program Q1_2
 use newtonMethod
 use bracketSearch
 implicit none
@@ -33,7 +33,6 @@ minX2 = bracketMin(f2, a0=0.5, b0=1.0, eps=1.0e-12)
 write (*,3) "Minimum (x1, y1) = (", minX1, ", ", f2(minX1), ")"
 write (*,3) "Maximum (x2, y2) = (", maxX1, ", ", f2(maxX1), ")"
 write (*,3) "Minimum (x3, y3) = (", minX2, ", ", f2(minX2), ")"
-
 
 end program
 

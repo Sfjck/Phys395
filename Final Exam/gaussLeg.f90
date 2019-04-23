@@ -3,7 +3,7 @@
 !gfortran -c -fdefault-real-8 gaussLeg.f90
 
 module gaussLeg
-use globalVars
+use globalVars3_4
 implicit none
 
 contains
