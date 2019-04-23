@@ -1,0 +1,11 @@
+set terminal pdf enhanced
+set output 'Q4Plots.pdf'
+
+set multiplot
+set title 'Periods of particle with different initial position'
+set xlabel 'Total Energy'
+set ylabel 'Period'
+set datafile separator ","
+plot 'periods.csv' u 1:2 w l title 'periods'
+unset multiplot
+

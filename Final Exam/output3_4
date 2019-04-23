@@ -1,8 +1,0 @@
-
- Problem 3: Integrate particle equations of motion
- Initial conditions: x=a=1, v=0, m=1
- Particle positions and velocities calculated, see plot3.pdf
-
- Problem 4: Find period of partcile with different initial conditions
- Initial conditions: xi = i/10*a, v=0, m=1
- Periods for particle calculated, see plot4.pdf

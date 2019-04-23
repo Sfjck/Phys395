@@ -10,10 +10,10 @@ echo "running... (This will take 2-10minutes)"
 ./tester > output && cat output
 
 echo "plotting..."
-gnuplot plot1.gpl
-gnuplot plot2.gpl
-gnuplot plot3.gpl
-gnuplot plot4.gpl
+#gnuplot plot1.gpl
+#gnuplot plot2.gpl
+#gnuplot plot3.gpl
+#gnuplot plot4.gpl
 gnuplot plot5.gpl
 
 echo "All tasks complete."

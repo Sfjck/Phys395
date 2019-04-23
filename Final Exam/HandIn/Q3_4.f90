@@ -20,7 +20,7 @@ integer i
 3 format(/, x, a)
 
 !Problem 1&2: Integrating equations of motion of double pendulum
-write (*,3) "Problem 3: Integrate particle equations of motion"
+write (*,*) "Problem 3: Integrate particle equations of motion"
 write (*,*) "Initial conditions: x=a=1, v=0, m=1"
 tMax = 20.0
 y = [a, 0.0]
@@ -45,10 +45,9 @@ do while(t .le. tMax)
 end do
 close(1)
 close(2)
-write(*,*) "Particle positions and velocities calculated, see Q3Plots.pdf"
 
 write (*,3) "Problem 4: Find period of partcile with different initial conditions"
-write (*,*) "Initial conditions: xi = i/10*a (i=1:50), v=0, m=1"
+write (*,*) "Initial conditions: xi = i/10*a, v=0, m=1"
 
 open(unit=1, file="periods.csv", status="replace", action="write")
 write(1,*) "E0", ",", "T"
@@ -68,7 +67,7 @@ do i = 1,50
 end do
 close(1)
 
-write (*,*) "Periods for particle calculated, see Q4Plots.pdf"
+write (*,*) "Data generation for problems 3 and 4 complete."
 
 end program
 
